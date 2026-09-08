@@ -56,26 +56,6 @@ Requisitos:
 ```bash
 pnpm install
 ```
-
-## Variables de Entorno
-
-| Variable | Obligatoria | Descripción |
-|---|---|---|
-| `VITE_DOMAIN` | Sí (producción) | Dominio del sitio ej. `liquidchofer.app`. Se usa en metadatos SEO (canonical, og:image), sitemap.xml y robots.txt. |
-| `VITE_GA_ID` | No | ID de Google Analytics (formato `G-XXXXXXXXXX`). Si no se setea, no se carga GA. |
-| `VITE_S_OLAVARRIA_SERVICIOS_URL_IMAGE` | No | Banner de patrocinio — imagen. |
-| `VITE_S_OLAVARRIA_SERVICIOS_URL_LOGO` | No | Banner de patrocinio — logo. |
-| `VITE_S_OLAVARRIA_SERVICIOS` | No | URL del patrocinador. |
-
-Crear `.env.production.local` para producción local:
-
-```bash
-VITE_DOMAIN=liquidchofer.app
-VITE_GA_ID=G-XXXXXXXXXX
-```
-
-No commitear valores reales de URLs privadas, tokens ni credenciales.
-
 ## Uso Local
 
 | Acción | Comando |
@@ -266,12 +246,9 @@ src/
 ## Capturas de Pantalla
 
 <div align="center">
-  <img src="./public/images/001.png" alt="Pantalla principal" width="400" style="max-width: 100%; height: auto; margin: 8px; border-radius: 8px;" />
-  <img src="./public/images/002.png" alt="Configuración de porcentajes" width="400" style="max-width: 100%; height: auto; margin: 8px; border-radius: 8px;" />
-  <img src="./public/images/003.png" alt="Gestión de gastos" width="400" style="max-width: 100%; height: auto; margin: 8px; border-radius: 8px;" />
-  <img src="./public/images/004.png" alt="Viajes con vale" width="400" style="max-width: 100%; height: auto; margin: 8px; border-radius: 8px;" />
-  <img src="./public/images/005.png" alt="Resultados y desglose" width="400" style="max-width: 100%; height: auto; margin: 8px; border-radius: 8px;" />
-  <img src="./public/images/006.png" alt="Comprobante PDF" width="400" style="max-width: 100%; height: auto; margin: 8px; border-radius: 8px;" />
+  <img src="./public/images/image-1.png" alt="Pantalla principal" width="400" style="max-width: 100%; height: auto; margin: 8px; border-radius: 8px;" />
+  <img src="./public/images/image-2.png" alt="Configuración de porcentajes" width="400" style="max-width: 100%; height: auto; margin: 8px; border-radius: 8px;" />
+  <img src="./public/images/image-3.png" alt="Gestión de gastos" width="400" style="max-width: 100%; height: auto; margin: 8px; border-radius: 8px;" />
 </div>
 
 ## Despliegue en Vercel
