@@ -266,16 +266,6 @@ El proyecto incluye `vercel.json` para servir la SPA:
   ]
 }
 ```
-
-### Variables de entorno en Vercel
-
-Ir a Project Settings → Environment Variables → agregar:
-
-| Name | Value | Environment |
-|---|---|---|
-| `VITE_DOMAIN` | `liquidchofer.app` | Production |
-| `VITE_GA_ID` | `G-XXXXXXXXXX` | Production |
-
 Rutas disponibles:
 
 - `/`
