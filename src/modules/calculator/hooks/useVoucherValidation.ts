@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback, type RefObject } from 'react'
 import useCalculatorContext from '../../../core/context/useCalculatorContext'
-import type { IVoucherTrip } from '../../../core/types/calculator'
+import type { IVoucherTrip } from '../../../core/interfaces/IVoucherTrip'
 
 export function useVoucherValidation() {
   const { state, dispatch } = useCalculatorContext()

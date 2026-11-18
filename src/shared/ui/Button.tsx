@@ -1,10 +1,6 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { cn } from '../../shared/lib/utils'
-
-interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
-  fullWidth?: boolean
-}
+import type { IButtonProps } from '../interfaces/props/IButtonProps'
 
 const variants = {
   primary: 'btn-primary-glow text-slate-900 font-bold shadow-sm',

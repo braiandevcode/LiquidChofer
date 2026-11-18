@@ -1,5 +1,5 @@
-import type { IVoucherDetail } from '../../../core/types/calculator'
 import type { ReactNode } from 'react'
+import type { IVoucherDetail } from '../../../core/interfaces/IVoucherDetail'
 
 interface IVoucherDetailListProps {
   voucherDetails: IVoucherDetail[]

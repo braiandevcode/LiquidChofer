@@ -7,7 +7,7 @@ import {
 import { Link } from 'react-router-dom'
 import { SPONSORS } from '../../core/config/sponsor.config'
 import SponsorBanner from '../../shared/components/SponsorBanner'
-import Button  from '../../shared/ui/Button'
+import Button from '../../shared/ui/Button'
 import { benefits, features } from '../../core/config/aboutPage.config'
 import { useState, useEffect, type ReactNode } from 'react'
 
@@ -24,7 +24,7 @@ const AboutPage = ():ReactNode => {
     <div className="min-safe">
       {/* Desktop: fixed right sidebar (xl+) */}
       <div
-        className={`hidden xl:block fixed right-4 top-1/2 -translate-y-1/2 z-10 w-80 transition-all duration-700 ease-out ${showSponsor ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}
+        className={`hidden xl:block fixed right-4 top-1/2 -translate-y-1/2 z-10 w-56 2xl:w-80 transition-all duration-700 ease-out ${showSponsor ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}
       >
         <SponsorBanner
           imageUrl={SPONSORS[0].imageUrl}
@@ -34,9 +34,9 @@ const AboutPage = ():ReactNode => {
         />
       </div>
       {/* Mobile: sticky slide from top with dismiss */}
-      <div className="sticky top-[60px] z-20 xl:hidden bg-bg-primary">
+      <div className="sticky top-17 z-20 xl:hidden bg-bg-deep">
         <div
-          className={`transition-all duration-700 ease-out overflow-hidden ${showSponsor ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}
+          className={`transition-all duration-700 ease-out overflow-hidden ${showSponsor ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}`}
         >
           <div className="mx-auto max-w-5xl px-4 pt-2 md:px-6">
             <SponsorBanner
@@ -75,16 +75,19 @@ const AboutPage = ():ReactNode => {
           </h1>
 
           <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-10">
-            LiquidChofer simplifica el cálculo de tu jornada laboral. Ingresá tus datos,
-            y nosotros nos encargamos de distribuir cada peso entre agencia, conductor
-            y vehículo. Sin errores, sin complicaciones.
+            LiquidChofer resuelve el cierre de tu jornada: cuánto le corresponde a la
+            agencia, cuánto a vos y cuánto al vehículo. Sin planillas ni cuentas a mano.
+            Y si te queda una duda, ChófIA te responde.
           </p>
 
           <Link to="/">
             <Button variant="primary" fullWidth={false} className="text-lg px-10 py-4">
-              Empezar a Usar
+              Empezar gratis
             </Button>
           </Link>
+          <p className="text-sm text-text-muted mt-3">
+            Solo necesitás una cuenta gratuita y conexión a internet.
+          </p>
         </section>
 
         <section className="mb-16 animate-fade-in-up stagger-1">
@@ -94,9 +97,8 @@ const AboutPage = ():ReactNode => {
                 Pensado para Vos
               </h2>
               <p className="text-text-secondary mb-6 leading-relaxed">
-                Sabemos que al finalizar una jornada larga, lo último que querés es
-                ponerte a hacer cuentas en una libreta. LiquidChofer fue creado
-                específicamente para choferes de agencias de remis.
+                LiquidChofer fue creado específicamente para choferes de agencias de remis,
+                para que cerrar el día no dependa de una libreta.
               </p>
               <ul className="space-y-3">
                 {benefits.map((benefit, index) => (
@@ -117,11 +119,11 @@ const AboutPage = ():ReactNode => {
                     <Calculator className="h-10 w-10 text-accent-amber" aria-hidden="true" />
                   </div>
                   <h3 className="text-2xl font-black text-text-primary font-display mb-2">
-                    Simple y Efectivo
+                    Simple y claro
                   </h3>
                   <p className="text-text-secondary">
-                    Sin curvas de aprendizaje. Sin configuraciones complejas.
-                    Abrís, ingresás tus datos, y listo.
+                    Sin planillas ni cuentas a mano. La app hace el reparto y vos ves
+                    el resultado.
                   </p>
                 </div>
               </div>
@@ -171,12 +173,11 @@ const AboutPage = ():ReactNode => {
               Listo para Empezar?
             </h2>
             <p className="text-lg text-text-secondary max-w-xl mx-auto mb-8">
-              Dejá las libretas y las calculadoras manuales atrás.
-              Probá LiquidChofer ahora y simplificá tu jornada.
+              Empezá gratis y simplificá tu jornada.
             </p>
             <Link to="/">
               <Button variant="primary" fullWidth={false} className="text-lg px-10 py-4">
-                Ir a la Calculadora
+                Empezar gratis
               </Button>
             </Link>
           </div>

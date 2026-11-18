@@ -1,26 +1,7 @@
 import { useState, useRef, useEffect, useId, type ReactNode } from 'react'
 import { Info } from 'lucide-react'
-
-type TAlign = 'start' | 'center' | 'end'
-
-interface IInfoRevealProps {
-  text: string
-  side?: 'top' | 'bottom'
-  align?: TAlign
-  className?: string
-}
-
-const ALIGN_CLASSES: Record<TAlign, string> = {
-  start: 'left-0',
-  center: 'left-1/2 -translate-x-1/2',
-  end: 'right-0',
-}
-
-const ALIGN_POINTER_CLASSES: Record<TAlign, string> = {
-  start: 'left-3',
-  center: 'left-1/2 -translate-x-1/2',
-  end: 'right-3',
-}
+import type { IInfoRevealProps } from '../interfaces/props/IInfoRevealProps'
+import { ALIGN_CLASSES, ALIGN_POINTER_CLASSES } from '../config/config.clasessAlign'
 
 const InfoReveal = ({ text, side = 'top', align = 'center', className = '' }: IInfoRevealProps): ReactNode => {
   const [isOpen, setIsOpen] = useState(false)

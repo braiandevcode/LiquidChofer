@@ -1,24 +1,6 @@
 import { useState, useRef, useEffect, useId, type ReactNode } from 'react'
-
-type TAlign = 'start' | 'center' | 'end'
-
-interface IHelpHintProps {
-  text: string
-  side?: 'top' | 'bottom'
-  align?: TAlign
-}
-
-const ALIGN_CLASSES: Record<TAlign, string> = {
-  start: 'left-0',
-  center: 'left-1/2 -translate-x-1/2',
-  end: 'right-0',
-}
-
-const ALIGN_POINTER_CLASSES: Record<TAlign, string> = {
-  start: 'left-3',
-  center: 'left-1/2 -translate-x-1/2',
-  end: 'right-3',
-}
+import type { IHelpHintProps } from '../interfaces/props/IHelpHintProps'
+import { ALIGN_CLASSES, ALIGN_POINTER_CLASSES } from '../config/config.clasessAlign'
 
 const HelpHint = ({ text, side = 'top', align = 'center' }: IHelpHintProps): ReactNode => {
   const [isOpen, setIsOpen] = useState(false)
@@ -45,7 +27,7 @@ const HelpHint = ({ text, side = 'top', align = 'center' }: IHelpHintProps): Rea
   useEffect(HANDLE_CLICK_OUTSIDE_SUBSCRIPTION, [isOpen])
 
   return (
-    <div ref={containerRef} className="relative inline-flex items-center" onKeyDown={HANDLE_KEYDOWN}>
+    <div ref={containerRef} className="relative ml-2 inline-flex items-center" onKeyDown={HANDLE_KEYDOWN}>
       <button
         type="button"
         onClick={HANDLE_TOGGLE}

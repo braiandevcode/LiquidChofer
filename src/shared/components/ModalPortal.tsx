@@ -1,11 +1,8 @@
 import { type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import type { ICommonProps } from '../interfaces/props/ICommonProps';
 
-interface IModalPortalProps {
-  children: ReactNode
-}
-
-const ModalPortal = ({ children }: IModalPortalProps): ReactNode => {
+const ModalPortal = ({ children }: ICommonProps): ReactNode => {
   return createPortal(children, document.body)
 }
 

@@ -1,0 +1,1 @@
+export type TOwner = 'agency' | 'driver'

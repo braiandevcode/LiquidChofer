@@ -1,0 +1,1 @@
+export type TJourneyShareViewState = 'idle' | 'loading' | 'ready' | 'error';

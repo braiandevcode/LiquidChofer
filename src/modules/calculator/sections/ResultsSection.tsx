@@ -5,13 +5,14 @@ import type { ReactNode } from 'react';
 
 interface ResultsSectionProps {
   onViewReceipt: () => void;
+  onSaveJourney: () => void;
 }
 
-export function ResultsSection({ onViewReceipt }: ResultsSectionProps): ReactNode {
+export function ResultsSection({ onViewReceipt, onSaveJourney }: ResultsSectionProps): ReactNode {
   const { state } = useCalculatorContext();
 
   if (state.calculated) {
-    return <PostCalculationView onViewReceipt={onViewReceipt} />;
+    return <PostCalculationView onViewReceipt={onViewReceipt} onSaveJourney={onSaveJourney} />;
   }
 
   return <PreCalculationView />;

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ShieldCheck } from 'lucide-react'
 import { legalLinks, socialLinks } from '../../core/config/footer.config'
 
 import type { ReactNode } from 'react'
@@ -20,6 +21,13 @@ const Footer = ():ReactNode => {
               Calculadora de jornada diseñada para choferes de agencias de remis.
               Simplifica tus cálculos diarios.
             </p>
+            <Link
+              to="/verificar"
+              className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-accent-teal transition-colors cursor-pointer group"
+            >
+              <ShieldCheck className="h-4 w-4 text-text-muted group-hover:text-accent-teal transition-colors" aria-hidden="true" />
+              Verificar comprobante
+            </Link>
           </div>
 
           <div className="flex flex-col gap-3">

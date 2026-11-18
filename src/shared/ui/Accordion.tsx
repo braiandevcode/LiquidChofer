@@ -1,9 +1,6 @@
 import type { ReactNode } from 'react';
 import AccordionItem from './AccordionItems';
-
-interface IAccordionProps {
-  items: { question: string; answer: string }[]
-}
+import type { IAccordionProps } from '../interfaces/props/IAccordionProps';
 
 const Accordion= ({ items }: IAccordionProps): ReactNode => {
   return (

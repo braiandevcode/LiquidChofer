@@ -1,11 +1,6 @@
 import { ChevronDown } from 'lucide-react'
 import { useCallback, useState, type ReactNode } from 'react'
-
-interface IAccordionItemProps {
-  question: string
-  answer: string
-  isDefaultOpen?: boolean
-}
+import type { IAccordionItemProps } from '../interfaces/props/IAccordionItemProps'
 
 const AccordionItem = ({ question, answer, isDefaultOpen = false }: IAccordionItemProps):ReactNode => {
   const [isOpen, setIsOpen] = useState<boolean>(isDefaultOpen)
@@ -44,11 +39,11 @@ const AccordionItem = ({ question, answer, isDefaultOpen = false }: IAccordionIt
         id={`accordion-panel-${question.replace(/\s+/g, '-').toLowerCase()}`}
         role="region"
         aria-labelledby={`accordion-btn-${question.replace(/\s+/g, '-').toLowerCase()}`}
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        className={`grid overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         }`}
       >
-        <div className="px-5 pb-5 pt-0 border-t border-border-subtle/50">
+        <div className="min-h-0 overflow-hidden px-5 pb-5 pt-0 border-t border-border-subtle/50">
           <p className="text-sm text-text-secondary leading-relaxed">
             {answer}
           </p>

@@ -20,7 +20,10 @@ class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundaryState> 
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error('ErrorBoundary caught:', error, errorInfo)
+    // SOLO EN DESARROLLO: EN PRODUCCION NO EXPONGO DETALLES INTERNOS EN CONSOLA
+    if (import.meta.env.DEV) {
+      console.error('ErrorBoundary caught:', error, errorInfo)
+    }
   }
 
   HANDLE_RELOAD = (): void => {
@@ -45,8 +48,7 @@ class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundaryState> 
                 Algo salió mal
               </h1>
               <p className="text-sm md:text-base text-text-secondary leading-relaxed">
-                Ocurrió un error inesperado. Puede deberse a un problema temporal.
-                Intentá recargar la página.
+                Algo no salió como esperábamos. Probá recargar la página.
               </p>
             </div>
 
@@ -59,7 +61,7 @@ class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundaryState> 
               Recargar página
             </button>
 
-            <p className="text-xs text-text-muted/60 max-w-xs">
+            <p className="text-xs text-text-muted/80 max-w-xs">
               Si el problema persiste, contactanos para ayudarte.
             </p>
           </div>

@@ -1,23 +1,6 @@
 import { useCallback, useState, type ReactNode } from "react";
 import { ExternalLink, X } from "lucide-react";
-
-declare global {
-  interface Window {
-    gtag?: (
-      event: string,
-      action: string,
-      params: Record<string, unknown>,
-    ) => void;
-  }
-}
-
-interface ISponsorBannerProps {
-  imageUrl?: string;
-  logoUrl?: string;
-  linkUrl?: string;
-  alt?: string;
-  dismissible?: boolean;
-}
+import type { ISponsorBannerProps } from "../interfaces/props/ISponsorBannerProps";
 
 const SponsorBanner = ({
   imageUrl,
@@ -65,7 +48,7 @@ const SponsorBanner = ({
         className={`flex items-center justify-center w-full ${isLogo ? "h-16" : "h-14 md:h-20"} rounded-xl border border-border-subtle bg-bg-input/30 gap-2`}
       >
         <svg
-          className="h-4 w-4 shrink-0 text-text-muted/40"
+          className="h-4 w-4 shrink-0 text-text-secondary"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -76,7 +59,7 @@ const SponsorBanner = ({
         >
           <path d="M19 14c1.5-2 3-5.5 3-7 0-2.2-1.8-4-4-4-1.4 0-2.7.7-3.4 1.8L12 7.2l-2.6-3.4C8.7 2.7 7.4 2 6 2 3.8 2 2 3.8 2 6c0 1.5 1.5 5 3 7l7 8 7-8Z" />
         </svg>
-        <span className="text-xs text-text-muted/40 font-display tracking-wide">
+        <span className="text-xs text-text-secondary font-display tracking-wide">
           Espacio publicitario
         </span>
       </div>

@@ -1,50 +1,52 @@
-import { Calculator, Clock, Download, FileText, Shield, Zap } from 'lucide-react'
-import type { Feature } from '../types/about'
+import {
+  Calculator,
+  FileText,
+  Fuel,
+  History,
+  Smartphone,
+  Sparkles,
+} from 'lucide-react'
 
-export const features:Feature[] = [
+import type { IFeature } from '../interfaces/IFeature'
+
+export const features: IFeature[] = [
   {
     icon: Calculator,
-    title: 'Cálculos Automáticos',
-    description:
-      'Olvidate de hacer cuentas manualmente. Ingresá tus datos y nosotros nos encargamos de todo el resto. Distribución de porcentajes, gastos, fábricas: todo calculado al instante.',
+    title: 'Cálculos automáticos',
+    description: 'El reparto de tu jornada, resuelto sin cuentas a mano.',
   },
   {
-    icon: Clock,
-    title: 'Ahorrá Tiempo',
+    icon: Sparkles,
+    title: 'Ayuda de ChófIA',
     description:
-      'Lo que antes te llevaba 15-20 minutos al finalizar tu jornada, ahora lo hacés en menos de 2 minutos. Más tiempo para vos, menos tiempo para papeleo.',
+      'Tu copiloto para dudas sobre la app y para el cálculo de tu jornada. Revisá siempre los números.',
   },
   {
-    icon: Shield,
-    title: 'Sin Errores',
-    description:
-      'Adiós a los errores de cálculo. El sistema valida automáticamente que tus porcentajes sumen 100% y realiza todas las operaciones con precisión matemática.',
+    icon: History,
+    title: 'Historial de jornadas',
+    description: 'Tus jornadas quedan guardadas para cuando las necesites.',
   },
   {
     icon: FileText,
-    title: 'Recibos Profesionales',
-    description:
-      'Generá recibos en PDF listos para descargar o compartir. Todo organizado, claro y profesional. Ideal para presentar a tu agencia.',
+    title: 'Recibos para compartir',
+    description: 'Un recibo claro, listo para descargar o compartir.',
   },
   {
-    icon: Download,
-    title: 'Funciona sin Internet',
-    description:
-      'Una vez que cargás la página, podés usarla sin conexión. Perfecto para zonas con mala señal o cuando te quedás sin datos.',
+    icon: Fuel,
+    title: 'Combustible y dueño del auto',
+    description: 'El combustible se descuenta a quien corresponde.',
   },
   {
-    icon: Zap,
-    title: 'Rápido y Ligero',
-    description:
-      'Diseñado para ser veloz incluso en teléfonos antiguos. Sin publicidades intrusivas, sin apps pesadas para instalar.',
+    icon: Smartphone,
+    title: 'Instalable en el teléfono',
+    description: 'Usala como una app más en tu teléfono.',
   },
 ]
 
 export const benefits: string[] = [
-  'Calculá tu jornada en segundos',
-  'Distribución automática de porcentajes',
-  'Manejo de múltiples fábricas',
-  'Control de gastos (Gas y Nafta)',
-  'Generá recibos en PDF',
-  '100% gratis para usar',
+  'Menos tiempo haciendo cuentas',
+  'Reparto claro entre agencia, conductor y vehículo',
+  'Tus jornadas guardadas y a mano',
+  'ChófIA para dudas y cálculos',
+  'Gratis, con cuota diaria en ChófIA',
 ]

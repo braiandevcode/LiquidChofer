@@ -1,17 +1,12 @@
 import { useCallback, useId, type ReactNode, type ChangeEvent } from 'react'
 import { Pencil } from 'lucide-react'
+import type { IPercentageInputProps } from '../interfaces/props/IPercentageInputProps'
 
-interface IPercentageInputProps {
-  label: string
-  value: number
-  onChange: (value: number) => void
-  hint?: string
-}
-
-const PercentageInput = ({ label, value, onChange, hint }: IPercentageInputProps):ReactNode => {
+const PercentageInput = ({ label, value, onChange, hint, disabled = false }: IPercentageInputProps):ReactNode => {
   const inputId: string = useId()
   const hintId: string = `${inputId}-hint`
 
+  // EVENTO DE CAMBIO
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     const raw = e.target.value.replace(/\D/g, '')
     onChange(Number(raw))
@@ -21,7 +16,7 @@ const PercentageInput = ({ label, value, onChange, hint }: IPercentageInputProps
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-2">
         <label htmlFor={inputId} className="text-base font-bold text-text-primary font-display tracking-wide">{label}</label>
-        <Pencil className="h-3.5 w-3.5 text-text-muted/60" aria-hidden="true" />
+        <Pencil className={`h-3.5 w-3.5 ${disabled ? 'text-text-muted/30' : 'text-text-muted/80'}`} aria-hidden="true" />
       </div>
       <div className="relative">
         <input
@@ -31,8 +26,11 @@ const PercentageInput = ({ label, value, onChange, hint }: IPercentageInputProps
           pattern="[0-9]*"
           value={value}
           onChange={handleChange}
+          disabled={disabled}
           aria-describedby={hint ? hintId : undefined}
-          className="w-full rounded-xl input-glass px-4 py-3.5 pr-12 text-lg font-semibold text-text-primary font-display tracking-wide [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className={`w-full rounded-xl input-glass px-4 py-3.5 pr-12 text-lg font-semibold text-text-primary font-display tracking-wide [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
+            disabled ? 'cursor-not-allowed border-border-subtle/50 bg-bg-card text-text-muted opacity-60' : ''
+          }`}
         />
         <span aria-hidden="true" className="absolute right-4 top-1/2 -translate-y-1/2 text-lg font-bold text-accent-violet font-display">%</span>
       </div>

@@ -75,7 +75,7 @@ const PreCalculationView = (): ReactNode => {
 
       {!SHOW_VOUCHER_ACTIVE && (
         <div className="py-2 px-3 rounded-lg bg-bg-input/60">
-          <span className="text-sm text-text-muted">Sin vouchers cargados</span>
+          <span className="text-sm text-text-muted">Sin vales cargados</span>
         </div>
       )}
 

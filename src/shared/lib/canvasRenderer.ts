@@ -70,6 +70,8 @@ export const renderOffscreen = async (elementId: string): Promise<HTMLCanvasElem
   const originalWidth: number = original.offsetWidth
   const originalHeight: number = original.offsetHeight
   const clone: HTMLElement = original.cloneNode(true) as HTMLElement
+  // MARCO SOLO EL CLON: ACTIVA LOS ESTILOS DE EXPORTACION SIN TOCAR LA UI.
+  clone.classList.add('receipt-export')
   clone.style.width = originalWidth + 'px'
   clone.style.height = originalHeight + 'px'
 

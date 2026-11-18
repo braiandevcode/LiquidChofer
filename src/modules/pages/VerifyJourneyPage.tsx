@@ -1,0 +1,433 @@
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ReactNode,
+  type SubmitEvent,
+} from 'react'
+import {
+  ArrowLeft,
+  BadgeCheck,
+  CircleExclamationPoint,
+  Clock,
+  LoaderCircle,
+  RotateCcw,
+  Search,
+  ShieldCheck,
+  ShieldX,
+  Trash,
+  type LucideIcon,
+} from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ApiError } from '../../core/services/api'
+import { TO_USER_ERROR } from '../../core/services/apiMessages'
+import { verifyJourneyCode } from '../../core/services/journeyHistory.service'
+import type {
+  IJourneyVerificationAmounts,
+  IJourneyVerificationResponse,
+  TJourneyVerificationStatus,
+} from '../../core/types/journeyHistory'
+import { FORMAT_JOURNEY_DATE, FORMAT_TIMESTAMP_DATE_TIME } from '../../shared/lib/journey'
+import Button from '../../shared/ui/Button'
+import Input from '../../shared/ui/Input'
+
+// EL CODIGO SIEMPRE TIENE 16 CARACTERES DEL ALFABETO DEL BACKEND (SIN I, L, O, U).
+const CODE_LENGTH: number = import.meta.env.MAX_LENGTH;
+const CODE_PATTERN: RegExp = /^[0-9A-HJKMNP-TV-Z]{16}$/
+const INVALID_CODE_MESSAGE: string =
+  'El código tiene 16 caracteres. Revisalo y volvé a intentar.'
+const NOT_FOUND_MESSAGE: string =
+  'No encontramos una constancia con ese código. Revisá que esté completo.'
+
+const CLEAN_CODE = (raw: string): string => raw.toUpperCase().replace(/[\s-]/g, '')
+
+// MANTENGO SOLO CARACTERES VALIDOS Y AGRUPO DE A CUATRO PARA LEERLO MEJOR.
+const FORMAT_CODE_INPUT = (raw: string): string => {
+  const clean: string = raw
+    .toUpperCase()
+    .replace(/[^0-9A-HJKMNP-TV-Z]/g, '')
+    .slice(0, CODE_LENGTH)
+  return clean.match(/.{1,4}/g)?.join('-') ?? ''
+}
+
+const IS_VALID_CODE = (clean: string): boolean => CODE_PATTERN.test(clean)
+
+const ARS_FORMATTER = new Intl.NumberFormat('es-AR', {
+  style: 'currency',
+  currency: 'ARS',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
+const FORMAT_ARS = (value?: number | null): string =>
+  typeof value === 'number' && Number.isFinite(value) ? ARS_FORMATTER.format(value) : '—'
+
+type TVerificationView = 'idle' | 'loading' | 'success' | 'invalid' | 'notfound' | 'error'
+
+interface IStatusMeta {
+  label: string
+  detail: string
+  icon: LucideIcon
+  tone: string
+}
+
+const STATUS_META: Record<TJourneyVerificationStatus, IStatusMeta> = {
+  active: {
+    label: 'Constancia vigente',
+    detail: 'La jornada está activa y coincide con una constancia emitida por LiquidChofer.',
+    icon: ShieldCheck,
+    tone: 'text-accent-teal border-accent-teal/30 bg-accent-teal/10',
+  },
+  replaced: {
+    label: 'Constancia reemplazada',
+    detail:
+      'Esta versión fue reemplazada por una jornada más reciente de la misma fecha. Sus importes ya no están vigentes.',
+    icon: RotateCcw,
+    tone: 'text-accent-amber border-accent-amber/30 bg-accent-amber/10',
+  },
+  deleted: {
+    label: 'Constancia eliminada',
+    detail:
+      'La jornada fue eliminada por su autor. La constancia existió, pero ya no está vigente.',
+    icon: Trash,
+    tone: 'text-accent-red border-accent-red/30 bg-accent-red/10',
+  },
+}
+
+interface IAmountRow {
+  label: string
+  value: string
+}
+
+// SOLO MUESTRO LOS IMPORTES QUE EL BACKEND CONSERVA PARA AUDITORIA.
+const BUILD_AMOUNT_ROWS = (amounts: IJourneyVerificationAmounts): IAmountRow[] => {
+  const rows: IAmountRow[] = [
+    { label: 'Total facturado', value: FORMAT_ARS(amounts.total) },
+    { label: 'Total ajustado', value: FORMAT_ARS(amounts.adjustedTotal) },
+    {
+      label: `Agencia (${amounts.agencyPercent}%)`,
+      value: FORMAT_ARS(amounts.agencyAmount),
+    },
+    { label: 'Ganancia de la agencia', value: FORMAT_ARS(amounts.finalAgency) },
+    {
+      label: `Chofer (${amounts.driverPercent}%)`,
+      value: FORMAT_ARS(amounts.driverAmount),
+    },
+  ]
+
+  if (amounts.carPercent !== null) {
+    rows.push({
+      label: `Vehículo (${amounts.carPercent}%)`,
+      value: FORMAT_ARS(amounts.carAmount),
+    })
+  }
+
+  return rows
+}
+
+const VerifyJourneyPage = (): ReactNode => {
+  const { code: codeParam } = useParams<{ code?: string }>()
+  const navigate = useNavigate()
+  // null = EL INPUT SIGUE AL CODIGO DE LA URL; un string = EL USUARIO ESTA ESCRIBIENDO.
+  const [inputDraft, setInputDraft] = useState<string | null>(null)
+  const [view, setView] = useState<TVerificationView>('idle')
+  const [result, setResult] = useState<IJourneyVerificationResponse | null>(null)
+  const [message, setMessage] = useState<string>('')
+  // IDENTIFICA LA ULTIMA CONSULTA PARA DESCARTAR RESPUESTAS VIEJAS.
+  const requestIdRef = useRef<number>(0)
+  // EVITA REPETIR LA CONSULTA CUANDO EL FORMULARIO ACTUALIZA LA URL.
+  const lastRequestedCodeRef = useRef<string>('')
+
+  const urlCode: string = CLEAN_CODE(codeParam ?? '')
+  const urlCodeInvalid: boolean = urlCode.length > 0 && !IS_VALID_CODE(urlCode)
+  const input: string = inputDraft ?? FORMAT_CODE_INPUT(codeParam ?? '')
+
+  const RUN_VERIFICATION = useCallback(async (clean: string): Promise<void> => {
+    const requestId: number = requestIdRef.current + 1
+    requestIdRef.current = requestId
+    lastRequestedCodeRef.current = clean
+    setView('loading')
+    setResult(null)
+    setMessage('')
+
+    try {
+      const response: IJourneyVerificationResponse = await verifyJourneyCode(clean)
+      if (requestIdRef.current !== requestId) return
+      setResult(response)
+      setView('success')
+    } catch (error) {
+      if (requestIdRef.current !== requestId) return
+      setResult(null)
+      if (error instanceof ApiError && error.status === 404) {
+        setView('notfound')
+        setMessage(NOT_FOUND_MESSAGE)
+        return
+      }
+      setView('error')
+      setMessage(TO_USER_ERROR(error, 'No se pudo verificar la constancia.'))
+    }
+  }, [])
+
+  // SI LA URL YA TRAE UN CODIGO VALIDO, CONSULTO AUTOMATICAMENTE AL ABRIR LA PAGINA.
+  // UN CODIGO MAL FORMADO SE INFORMA EN EL INPUT SIN LLAMAR AL BACKEND.
+  useEffect(() => {
+    if (!IS_VALID_CODE(urlCode)) return
+    if (lastRequestedCodeRef.current === urlCode) return
+    void RUN_VERIFICATION(urlCode)
+  }, [urlCode, RUN_VERIFICATION])
+
+  const HANDLE_CHANGE = (event: ChangeEvent<HTMLInputElement>): void => {
+    // EDITAR EL CODIGO INVALIDA CUALQUIER CONSULTA EN CURSO.
+    requestIdRef.current += 1
+    lastRequestedCodeRef.current = ''
+    setInputDraft(FORMAT_CODE_INPUT(event.target.value))
+    setView('idle')
+    setResult(null)
+    setMessage('')
+  }
+
+  const HANDLE_SUBMIT = (event: SubmitEvent<HTMLFormElement>): void => {
+    event.preventDefault()
+
+    const clean: string = CLEAN_CODE(input)
+    if (!IS_VALID_CODE(clean)) {
+      setInputDraft(FORMAT_CODE_INPUT(clean))
+      setView('invalid')
+      setResult(null)
+      setMessage(INVALID_CODE_MESSAGE)
+      return
+    }
+
+    // AL CONFIRMAR, EL INPUT VUELVE A SEGUIR EL CODIGO DE LA URL.
+    setInputDraft(null)
+    void RUN_VERIFICATION(clean)
+    // COMPARTO LA URL CON EL CODIGO PARA QUE SE PUEDA GUARDAR O REENVIAR.
+    if (urlCode !== clean) {
+      navigate(`/verificar/${clean}`, { replace: true })
+    }
+  }
+
+  const HANDLE_RETRY = (): void => {
+    const clean: string = CLEAN_CODE(input)
+    if (IS_VALID_CODE(clean)) void RUN_VERIFICATION(clean)
+  }
+
+  const isLoading: boolean = view === 'loading'
+  const canSubmit: boolean = input.length > 0 && !isLoading
+  const inputError: string =
+    view === 'invalid' ? message : urlCodeInvalid && inputDraft === null ? INVALID_CODE_MESSAGE : ''
+  const statusMeta: IStatusMeta | null = result ? STATUS_META[result.status] : null
+  const StatusIcon: LucideIcon | null = statusMeta?.icon ?? null
+
+  return (
+    <div className="min-safe">
+      <div className="mx-auto max-w-2xl px-4 py-8 md:px-6 md:py-10">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-accent-teal transition-colors cursor-pointer mb-6 group"
+        >
+          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" aria-hidden="true" />
+          Volver al inicio
+        </Link>
+
+        <div className="flex flex-col items-center text-center mb-8 animate-fade-in-up">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-teal/15 border border-accent-teal/20 mb-4">
+            <BadgeCheck className="h-7 w-7 text-accent-teal" aria-hidden="true" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-black text-text-primary font-display tracking-tight mb-2">
+            Verificar comprobante
+          </h1>
+          <p className="max-w-lg text-text-secondary">
+            Ingresá el código que figura al pie del comprobante. La consulta es pública y no
+            requiere iniciar sesión.
+          </p>
+        </div>
+
+        <form
+          onSubmit={HANDLE_SUBMIT}
+          className="card-glass rounded-xl p-5 md:p-6 mb-6 animate-fade-in-up stagger-1"
+          noValidate
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="flex-1">
+              <Input
+                label="Código de verificación"
+                value={input}
+                onChange={HANDLE_CHANGE}
+                placeholder="XXXX-XXXX-XXXX-XXXX"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                error={inputError}
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={!canSubmit}
+              fullWidth={false}
+              className="w-full sm:mb-0.5 sm:w-auto sm:px-6"
+            >
+              {isLoading ? (
+                <span className="inline-flex items-center gap-2">
+                  <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  Verificando
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2">
+                  <Search className="h-4 w-4" aria-hidden="true" />
+                  Verificar
+                </span>
+              )}
+            </Button>
+          </div>
+          <p id="verify-help" className="mt-2 text-xs text-text-muted">
+            El código tiene el formato XXXX-XXXX-XXXX-XXXX. Podés escribirlo en minúsculas y sin
+            guiones: lo normalizamos automáticamente.
+          </p>
+        </form>
+
+        <div aria-live="polite" aria-busy={isLoading}>
+          {isLoading && (
+            <div className="card-glass rounded-xl p-8 text-center animate-fade-in-up">
+              <LoaderCircle
+                className="mx-auto h-8 w-8 animate-spin text-accent-teal"
+                aria-hidden="true"
+              />
+              <p className="mt-3 text-sm text-text-secondary">Consultando la constancia…</p>
+            </div>
+          )}
+
+          {!isLoading && view === 'idle' && !inputError && (
+            <div className="rounded-xl border border-border-subtle bg-bg-card/60 p-5 text-sm text-text-muted animate-fade-in-up">
+              <p className="flex items-start gap-2">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-text-muted" aria-hidden="true" />
+                La verificación compara el código con los registros de LiquidChofer e informa si la
+                jornada está vigente, fue reemplazada o fue eliminada.
+              </p>
+            </div>
+          )}
+
+          {!isLoading && view === 'notfound' && (
+            <div className="card-glass rounded-xl p-6 animate-fade-in-up">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-red/10 border border-accent-red/30">
+                  <ShieldX className="h-5 w-5 text-accent-red" aria-hidden="true" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-text-primary font-display">
+                    Constancia no encontrada
+                  </h2>
+                  <p className="mt-1 text-sm text-text-secondary">{message}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!isLoading && view === 'error' && (
+            <div className="card-glass rounded-xl p-6 animate-fade-in-up">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-red/10 border border-accent-red/30">
+                  <CircleExclamationPoint className="h-5 w-5 text-accent-red" aria-hidden="true" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-lg font-bold text-text-primary font-display">
+                    No pudimos verificar
+                  </h2>
+                  <p className="mt-1 text-sm text-text-secondary">{message}</p>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    fullWidth={false}
+                    className="mt-4"
+                    onClick={HANDLE_RETRY}
+                  >
+                    Intentar de nuevo
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!isLoading && view === 'success' && result && statusMeta && StatusIcon && (
+            <div className="card-glass rounded-xl overflow-hidden animate-fade-in-up">
+              <div className={`flex items-start gap-3 border-b p-5 ${statusMeta.tone}`}>
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border-subtle bg-bg-deep/20">
+                  <StatusIcon className="h-6 w-6" aria-hidden="true" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold font-display">{statusMeta.label}</h2>
+                  <p className="mt-1 text-sm opacity-90">{statusMeta.detail}</p>
+                </div>
+              </div>
+
+              <div className="p-5">
+                <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="rounded-lg border border-border-subtle bg-bg-card-subtle p-3">
+                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-text-muted font-display">
+                      Fecha de la jornada
+                    </dt>
+                    <dd className="mt-1 text-sm font-semibold text-text-primary">
+                      {FORMAT_JOURNEY_DATE(result.journeyDate)}
+                    </dd>
+                  </div>
+                  <div className="rounded-lg border border-border-subtle bg-bg-card-subtle p-3">
+                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-text-muted font-display">
+                      Emitida
+                    </dt>
+                    <dd className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-text-primary">
+                      <Clock className="h-3.5 w-3.5 text-text-muted" aria-hidden="true" />
+                      {FORMAT_TIMESTAMP_DATE_TIME(result.createdAt)}
+                    </dd>
+                  </div>
+                  {result.deletedAt && (
+                    <div className="rounded-lg border border-border-subtle bg-bg-card-subtle p-3 sm:col-span-2">
+                      <dt className="text-[11px] font-semibold uppercase tracking-wider text-text-muted font-display">
+                        Dada de baja
+                      </dt>
+                      <dd className="mt-1 text-sm font-semibold text-text-primary">
+                        {FORMAT_TIMESTAMP_DATE_TIME(result.deletedAt)}
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+
+                {result.amounts ? (
+                  <div className="mt-5">
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted font-display">
+                      Importes registrados
+                    </h3>
+                    <dl className="divide-y divide-border-subtle rounded-lg border border-border-subtle">
+                      {BUILD_AMOUNT_ROWS(result.amounts).map((row) => (
+                        <div
+                          key={row.label}
+                          className="flex items-baseline justify-between gap-3 px-3 py-2 text-sm"
+                        >
+                          <dt className="text-text-secondary">{row.label}</dt>
+                          <dd className="font-mono font-semibold text-text-primary">{row.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                ) : (
+                  <p className="mt-5 rounded-lg border border-border-subtle bg-bg-card-subtle p-3 text-sm text-text-muted">
+                    Los importes ya no están disponibles. La constancia se conserva únicamente con
+                    sus datos de auditoría.
+                  </p>
+                )}
+
+                <p className="mt-5 text-xs text-text-muted">
+                  La verificación confirma que el código corresponde a una constancia registrada.
+                  Para validar el contenido impreso, compará sus importes con los que figuran acá.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default VerifyJourneyPage

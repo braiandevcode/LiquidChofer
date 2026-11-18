@@ -19,11 +19,11 @@ const MaintenancePage = (): ReactNode => {
 
         <div className="space-y-2">
           <h1 className="text-2xl md:text-3xl font-black text-text-primary font-display tracking-tight">
-            Sitio en mantenimiento
+            Estamos en mantenimiento
           </h1>
           <p className="text-sm md:text-base text-text-secondary leading-relaxed">
-            Estamos trabajando para mejorar tu experiencia.
-            Volvé pronto.
+            Estamos haciendo mejoras para que todo funcione mejor.
+            Volvé en un rato.
           </p>
         </div>
 
@@ -36,7 +36,7 @@ const MaintenancePage = (): ReactNode => {
           Reintentar
         </button>
 
-        <p className="text-xs text-text-muted/60 max-w-xs">
+        <p className="text-xs text-text-muted/80 max-w-xs">
           Si esto sigue así, volvé más tarde o contactanos.
         </p>
       </div>

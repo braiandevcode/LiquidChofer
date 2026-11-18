@@ -1,11 +1,6 @@
 import { Check } from 'lucide-react'
 import type { ReactNode } from 'react'
-
-interface IStepIndicatorProps {
-  currentStep: number
-  totalSteps: number
-  labels: string[]
-}
+import type { IStepIndicatorProps } from '../interfaces/props/IStepIndicatorProps'
 
 const StepIndicator = ({ currentStep, totalSteps, labels }: IStepIndicatorProps): ReactNode => {
   return (

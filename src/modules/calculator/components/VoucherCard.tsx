@@ -2,8 +2,8 @@ import Input from '../../../shared/ui/Input'
 import HelpHint from '../../../shared/ui/HelpHint'
 import InfoReveal from '../../../shared/ui/InfoReveal'
 import { CheckCircle2, Trash2, Save, Edit } from 'lucide-react'
-import type { IVoucherTrip } from '../../../core/types/calculator'
-import type { TAction } from '../../../core/types/action'
+import type { IVoucherTrip } from '../../../core/interfaces/IVoucherTrip'
+import type { TAction } from '../../../core/types/TAction'
 import { useCallback, type ChangeEvent, type Dispatch, type ReactNode } from 'react'
 import useVoucherDraft from '../hooks/useVoucherDraft'
 
@@ -117,7 +117,7 @@ const VoucherCard = ({ voucher, dispatch, saveVoucher }: IVoucherCardProps): Rea
         />
         {currentVoucher.type === 'factory' && (
           <Input
-            label="precio planilla"
+            label="Precio planilla"
             prefix="$"
             numeric
             placeholder="0"
@@ -172,7 +172,7 @@ const VoucherCard = ({ voucher, dispatch, saveVoucher }: IVoucherCardProps): Rea
             <Save className="h-3.5 w-3.5" aria-hidden="true" />
             {ACTION_LABEL}
           </button>
-          <HelpHint text="Completá nombre, viajes y precio real para habilitar el guardado. El vale persiste al recargar la página solo si está guardado." side="top" align="end" />
+          <HelpHint text="Completá nombre, viajes y precio real para habilitar el guardado. Guardá el vale para que no se pierda al recargar." side="top" align="end" />
         </div>
       )}
     </div>

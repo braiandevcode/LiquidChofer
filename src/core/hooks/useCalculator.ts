@@ -1,9 +1,14 @@
-import type { ICalculatorState, ICalculatorResult, IVoucherDetail } from '../types/calculator'
+import type { ICalculatorResult } from "../interfaces/ICalculatorResult"
+import type { ICalculatorState } from "../interfaces/ICalculatorState"
+import type { IVoucherDetail } from "../interfaces/IVoucherDetail"
+
 
 export function calculateResult(state: ICalculatorState): ICalculatorResult {
-  const { total, agencyPercent, driverPercent, carPercent, carRented, gas, petrol, vouchers, showVouchers } = state
+  const { total, agencyPercent, driverPercent, carPercent, carRented, carOwner, gas, petrol, vouchers, showVouchers } = state
   const effectiveVouchers = showVouchers ? vouchers.filter((v) => v.saved && !v.editing) : []
 
+
+  // MAPEO LOS VOUCHERS EFECTIVOS A DETALLES DE VOUCHER PARA EL RESULTADO
   const voucherDetailList: IVoucherDetail[] = effectiveVouchers.map((v) => ({
     id: v.id,
     type: v.type,
@@ -27,7 +32,7 @@ export function calculateResult(state: ICalculatorState): ICalculatorResult {
   const factoryEarningsTotal: number = factoryTotal - fixedFeeTotal
   const adjustedTotal: number = total - factoryEarningsTotal
 
-  const driverAmount: number = adjustedTotal * (driverPercent / ONE_HUNDRED)
+  let driverAmount: number = adjustedTotal * (driverPercent / ONE_HUNDRED)
 
   let agencyAmount: number
   let agencyDisplayPercent: number
@@ -46,10 +51,18 @@ export function calculateResult(state: ICalculatorState): ICalculatorResult {
     percentTotal = agencyPercent + driverPercent
   }
 
-  const deduction = fixedFeeTotal + otherTotal
-  const finalAgency = agencyAmount - deduction
+  const deduction: number = fixedFeeTotal + otherTotal;
+  const fuelExpenses: number = gas + petrol;
+  const fuelFromAgency: number = !carRented && carOwner !== 'driver' ? fuelExpenses : 0;
+  const fuelFromDriver: number = !carRented && carOwner === 'driver' ? fuelExpenses : 0;
 
-  const isPercentValid = percentTotal === ONE_HUNDRED
+  // AJUSTO MONTO DE LA AGENCIA SI HAY DESCUENTO DE COMBUSTIBLE
+  const finalAgency: number = agencyAmount - deduction - fuelFromAgency
+
+  // AJUSTO MONTO DEL CONDUCTOR SI HAY DESCUENTO DE COMBUSTIBLE
+  driverAmount -= fuelFromDriver
+
+  const isPercentValid: boolean = percentTotal === ONE_HUNDRED
 
   return {
     adjustedTotal,
@@ -66,6 +79,8 @@ export function calculateResult(state: ICalculatorState): ICalculatorResult {
     otherTotal,
     finalAgency,
     percentTotal,
+    fuelFromAgency,
+    fuelFromDriver,
     isPercentValid,
   }
 }

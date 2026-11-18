@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState, type ChangeEvent, type Dispatch } from 'react'
-import type { IVoucherTrip } from '../../../core/types/calculator'
-import type { TAction } from '../../../core/types/action'
+import type { TAction } from '../../../core/types/TAction'
 import { validateTrips } from '../../../core/schemas/calculator.schema'
+import type { IVoucherTrip } from '../../../core/interfaces/IVoucherTrip'
+
+const MAX_PRICE: number = 999_999
 
 type TVoucherEditableField = keyof Pick<IVoucherTrip, 'trips' | 'pricePerTrip' | 'fixedFeePerTrip'>
 
@@ -18,13 +20,15 @@ const hasVoucherChanges = (draftVoucher: IVoucherTrip, savedVoucher: IVoucherTri
   draftVoucher.fixedFeePerTrip !== savedVoucher.fixedFeePerTrip
 )
 
+
 const parseNumericField = (field: TVoucherEditableField, raw: string): number => {
   if (field === 'trips') {
     const cleaned: string = raw.replace(/\D/g, '').slice(0, 2)
     return Math.min(Number(cleaned), 99)
   }
 
-  return Number(raw.replace(/\D/g, ''))
+  const cleaned: string = raw.replace(/\D/g, '').slice(0, 6)
+  return Math.min(Number(cleaned), MAX_PRICE)
 }
 
 interface IUseVoucherDraftProps {

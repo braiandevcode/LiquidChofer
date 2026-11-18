@@ -8,9 +8,10 @@ import type { ReactNode } from 'react'
 
 interface ILandingPageProps {
   onStart: () => void
+  hasAccount: boolean
 }
 
-const LandingPage = ({ onStart }: ILandingPageProps):ReactNode => {
+const LandingPage = ({ onStart, hasAccount }: ILandingPageProps):ReactNode => {
   const [showSponsor, setShowSponsor] = useState(false)
 
   const SHOW_SPONSOR_WITH_TRANSITION = (): (() => void) => {
@@ -35,9 +36,9 @@ const LandingPage = ({ onStart }: ILandingPageProps):ReactNode => {
       </div>
 
       {/* Mobile: sticky slide from top with dismiss */}
-      <div className="sticky top-[60px] z-20 xl:hidden bg-bg-primary">
+      <div className="sticky top-17 z-20 xl:hidden bg-bg-deep">
         <div
-          className={`transition-all duration-700 ease-out overflow-hidden ${showSponsor ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}
+          className={`transition-all duration-700 ease-out overflow-hidden ${showSponsor ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}`}
         >
           <div className="mx-auto max-w-2xl px-4 pt-2">
             <SponsorBanner
@@ -63,19 +64,24 @@ const LandingPage = ({ onStart }: ILandingPageProps):ReactNode => {
           </h1>
           <p className="text-base md:text-lg text-text-secondary max-w-lg mx-auto leading-relaxed">
             Olvidate de los cálculos tediosos al final del turno.{' '}
-            <span className="text-text-primary font-semibold">LiquidChofer</span> hace el trabajo
-            por vos: ingresá los datos y tené todo listo en segundos.
+            <span className="text-text-primary font-semibold">LiquidChofer</span> hace el reparto
+            por vos: cuánto le corresponde a la agencia, cuánto a vos y cuánto al vehículo.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onStart}
-          className="inline-flex items-center gap-2.5 rounded-xl bg-accent-violet px-6 py-3.5 md:px-8 md:py-4 text-base md:text-lg font-bold text-white font-display transition-all duration-200 hover:shadow-glow-violet hover:scale-[1.02] active:scale-100 cursor-pointer"
-        >
-          Empezar
-          <ArrowRight className="h-5 w-5" aria-hidden="true" />
-        </button>
+        <div className="flex flex-col items-center gap-2">
+          <button
+            type="button"
+            onClick={onStart}
+            className="inline-flex items-center gap-2.5 rounded-xl bg-accent-violet px-6 py-3.5 md:px-8 md:py-4 text-base md:text-lg font-bold text-white font-display transition-all duration-200 hover:shadow-glow-violet hover:scale-[1.02] active:scale-100 cursor-pointer"
+          >
+            Empezar
+            <ArrowRight className="h-5 w-5" aria-hidden="true" />
+          </button>
+          {!hasAccount && (
+            <p className="text-sm text-text-muted">Solo necesitás una cuenta gratuita.</p>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 md:mt-12 w-full">
           {

@@ -1,23 +1,20 @@
-import { useCallback, useId, useEffect, useRef, type ReactNode } from 'react'
-
-interface IToggleProps {
-  label: string
-  enabled: boolean
-  disabled?: boolean
-  onChange: (enabled: boolean) => void
-}
+import { useCallback, useId, useEffect, useRef, type ReactNode, type RefObject } from 'react'
+import type { IToggleProps } from '../interfaces/props/IToggleProps'
 
 const Toggle = ({ label, enabled, disabled = false, onChange }: IToggleProps):ReactNode => {
   const labelId:string = useId()
-  const liveRef = useRef<HTMLSpanElement>(null)
+  const liveRef: RefObject<HTMLSpanElement | null> = useRef<HTMLSpanElement>(null)
 
+  // HANDLE LIVE REGION UPDATE
   const HANDLE_LIVE_REGION_UPDATE = (): void => {
     if (liveRef.current) {
       liveRef.current.textContent = `${label}: ${enabled ? 'activado' : 'desactivado'}`
     }
   }
+
   useEffect(HANDLE_LIVE_REGION_UPDATE, [enabled, label])
 
+  // EVENTO TOGGLE
   const handleToggle = useCallback((): void => {
     if (!disabled) {
       onChange(!enabled)

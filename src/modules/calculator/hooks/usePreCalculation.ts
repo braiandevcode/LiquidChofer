@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
-import type { ICalculatorResult, ICalculatorState, IVoucherTrip } from '../../../core/types/calculator'
 import { ENameTypesEntity } from '../../../core/enum/ENameTypesEntity'
 import { calculateResult } from '../../../core/hooks/useCalculator'
+import type { ICalculatorResult } from '../../../core/interfaces/ICalculatorResult'
+import type { ICalculatorState } from '../../../core/interfaces/ICalculatorState'
+import type { IVoucherTrip } from '../../../core/interfaces/IVoucherTrip'
 
 interface IUsePreCalculationReturn {
   result: ICalculatorResult

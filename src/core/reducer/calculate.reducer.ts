@@ -1,6 +1,6 @@
 import { initialState } from '../config/calculates.config'
-import type { TAction } from '../types/action'
-import type { ICalculatorState } from '../types/calculator'
+import type { ICalculatorState } from '../interfaces/ICalculatorState'
+import type { TAction } from '../types/TAction'
 
 const calculatorReducer = (state: ICalculatorState, action: TAction): ICalculatorState => {
   switch (action.type) {
@@ -14,11 +14,13 @@ const calculatorReducer = (state: ICalculatorState, action: TAction): ICalculato
       return { ...state, carPercent: action.payload, calculated: false }
     case 'SET_CAR_RENTED': {
       const newValue: boolean = action.payload
-      if (newValue === state.carRented) {
-        return state
-      }
-      return { ...state, carRented: newValue, calculated: false }
+      if (newValue === state.carRented) return state
+      // ALQUILADO => SIN DUEÑO; NO ALQUILADO => DUEÑO PREVIO O AGENCIA
+      return { ...state, carRented: newValue, carOwner: newValue ? null : (state.carOwner ?? 'agency'), calculated: false }
     }
+    case 'SET_CAR_OWNER':
+      // SOLO TIENE SENTIDO SI NO ESTA ALQUILADO
+      return state.carRented ? state : { ...state, carOwner: action.payload ?? 'agency', calculated: false }
     case 'SET_GAS':
       return { ...state, gas: action.payload, calculated: false }
     case 'SET_PETROL':
@@ -63,8 +65,21 @@ const calculatorReducer = (state: ICalculatorState, action: TAction): ICalculato
     }
     case 'CALCULATE':
       return { ...state, calculated: true }
+    case 'HYDRATE_STATE':
+      return { ...action.payload, calculated: false }
+    case 'APPLY_PERCENT_DEFAULTS': {
+      const { payload } = action
+      const ALREADY_APPLIED: boolean =
+        state.agencyPercent === payload.agencyPercent &&
+        state.driverPercent === payload.driverPercent &&
+        state.carPercent === payload.carPercent &&
+        state.carRented === payload.carRented &&
+        state.carOwner === payload.carOwner
+      if (ALREADY_APPLIED) return state // EVITO UN LOOP DE ACTUALIZACIONES
+      return { ...state, ...payload, calculated: false }
+    }
     case 'RESET':
-      return { ...initialState, calculated: false }
+      return { ...initialState, ...(action.payload ?? {}), calculated: false }
     default:
       return state
   }

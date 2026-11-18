@@ -16,12 +16,19 @@ dist
 dist-ssr
 *.local
 
-# Environment variables (sensible - NO subir al repo)
+# Environment variables and secrets (sensible - NO subir al repo)
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+*.local
+*.pem
+*.key
+*.p12
+*.pfx
+.npmrc
+.yarnrc.yml
+credentials*
+secrets*
 
 # Test coverage
 coverage
@@ -54,3 +61,7 @@ Thumbs.db
 *.temp
 tmp/
 temp/
+
+skills.json
+skills-*.json
+skills-lock.json

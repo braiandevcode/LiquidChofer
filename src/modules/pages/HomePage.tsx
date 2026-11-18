@@ -1,30 +1,18 @@
-import { useCallback, useState, type ReactNode } from 'react'
-import { CalculatorProvider } from '../../core/context/CalculatorContext'
+import { useCallback, type ReactNode } from 'react'
+import { useNavigate, type NavigateFunction } from 'react-router-dom'
+import { useAuth } from '../../core/context/AuthContext'
 import LandingPage from './LandingPage'
-import WizardPage from '../calculator/pages/WizardPage'
 
-type TMode = 'landing' | 'wizard';
+const HomePage = (): ReactNode => {
+  const { user } = useAuth()
+  const navigate: NavigateFunction = useNavigate()
 
-const HomePage = ():ReactNode => {
-  const [mode, setMode] = useState<TMode>('landing')
-
+  // EMPIEZO LA CALCULADORA: CON CUENTA VOY AL PANEL, SIN CUENTA AL LOGIN
   const handleStart = useCallback((): void => {
-    setMode('wizard')
-  }, [])
+    navigate(user ? '/panel' : '/login')
+  }, [user, navigate])
 
-  const handleBackToLanding = useCallback((): void => {
-    setMode('landing')
-  }, [])
-
-  if (mode === 'landing') {
-    return <LandingPage onStart={handleStart} />
-  }
-
-  return (
-    <CalculatorProvider>
-      <WizardPage onBackToLanding={handleBackToLanding} />
-    </CalculatorProvider>
-  )
+  return <LandingPage onStart={handleStart} hasAccount={Boolean(user)} />
 }
 
 export default HomePage

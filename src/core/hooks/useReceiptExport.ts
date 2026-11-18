@@ -5,7 +5,7 @@ import { ENameReceip } from '../enum/ENameReceip'
 import { EExtentionFile } from '../enum/EExtentionFile'
 
 export const useReceiptExport = () => {
-  const shareImage = useCallback(async (elementId: string) => {
+  const shareImage = useCallback(async (elementId: string, verificationUrl?: string) => {
     const canvas: HTMLCanvasElement = await renderOffscreen(elementId)
 
     const blob: Blob | null = await new Promise<Blob | null>((resolve) =>
@@ -14,9 +14,14 @@ export const useReceiptExport = () => {
     if (!blob) return
 
     const file: File = new File([blob], `summary-${Date.now()}.png`, { type: 'image/png' })
+    const shareData: ShareData = {
+      files: [file],
+      title: 'Recibo de jornada',
+    }
+    if (verificationUrl) shareData.text = verificationUrl
 
-    if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file] })
+    if (navigator.share && navigator.canShare?.(shareData)) {
+      await navigator.share(shareData)
     } else {
       const url: string = URL.createObjectURL(blob)
       const a: HTMLAnchorElement = document.createElement('a')

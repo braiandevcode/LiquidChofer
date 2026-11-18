@@ -3,7 +3,7 @@ import { X, AlertTriangle } from 'lucide-react'
 import Button  from '../../../shared/ui/Button'
 import IconButton from '../../../shared/styles/IconButton'
 import ModalPortal from '../../../shared/components/ModalPortal'
-import { useFocusTrap } from '../hooks/useFocusTrap'
+import { useFocusTrap } from '../../../shared/hooks/useFocusTrap'
 
 interface IConfirmResetModalProps {
   isOpen: boolean

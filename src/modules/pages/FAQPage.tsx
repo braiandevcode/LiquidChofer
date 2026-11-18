@@ -19,7 +19,7 @@ const FAQPage = (): ReactNode => {
     <div className="min-safe">
       {/* Desktop: fixed left sidebar (xl+) */}
       <div
-        className={`hidden xl:block fixed left-4 top-1/2 -translate-y-1/2 z-30 w-60 transition-all duration-700 ease-out ${showSponsor ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}`}
+        className={`hidden xl:block fixed left-4 top-1/2 -translate-y-1/2 z-30 w-48 2xl:w-60 transition-all duration-700 ease-out ${showSponsor ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}`}
       >
         <SponsorBanner
           imageUrl={SPONSORS[0].imageUrl}
@@ -29,9 +29,9 @@ const FAQPage = (): ReactNode => {
       </div>
 
       {/* Mobile: sticky slide from top with dismiss */}
-      <div className="sticky top-[60px] z-20 xl:hidden bg-bg-primary">
+      <div className="sticky top-17 z-20 xl:hidden bg-bg-deep">
         <div
-          className={`transition-all duration-700 ease-out overflow-hidden ${showSponsor ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}
+          className={`transition-all duration-700 ease-out overflow-hidden ${showSponsor ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}`}
         >
           <div className="mx-auto max-w-3xl px-4 pt-2 md:px-6">
             <SponsorBanner

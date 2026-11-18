@@ -1,12 +1,5 @@
-import { type InputHTMLAttributes, forwardRef, useId } from 'react'
-
-interface IInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
-  label: string
-  prefix?: string
-  error?: string
-  formattedValue?: number
-  numeric?: boolean
-}
+import { forwardRef, useId } from 'react'
+import type { IInputProps } from '../interfaces/props/IInputProps'
 
 const Input = forwardRef<HTMLInputElement, IInputProps>(
   ({ label, prefix, error, formattedValue, numeric, className = '', inputMode, id: externalId, ...props }, ref) => {
@@ -32,7 +25,7 @@ const Input = forwardRef<HTMLInputElement, IInputProps>(
             pattern={numeric ? '[0-9]*' : undefined}
             aria-invalid={error ? 'true' : undefined}
             aria-describedby={error ? errorId : (formattedValue !== undefined && formattedValue > 0 ? formattedId : undefined)}
-            className={`w-full rounded-xl input-glass px-4 py-3.5 text-lg font-semibold text-text-primary placeholder:text-text-muted/50 font-display tracking-wide ${
+            className={`w-full rounded-xl input-glass px-4 py-3.5 text-lg font-semibold text-text-primary placeholder:text-text-muted/70 font-display tracking-wide ${
               prefix ? 'pl-10' : ''
             } ${error ? 'input-error' : ''} disabled:bg-bg-card disabled:border-border-subtle/50 disabled:text-text-muted disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
             {...props}

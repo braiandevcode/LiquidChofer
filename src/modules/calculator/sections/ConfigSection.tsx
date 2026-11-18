@@ -4,6 +4,7 @@ import Toggle from '../../../shared/ui/Toggle'
 import HelpHint from '../../../shared/ui/HelpHint'
 import PercentageInput from '../../../shared/ui/PercentageInput'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
+import CarOwnerSelector from '../../../shared/ui/CarOwnerSelector'
 
 const ConfigSection = (): ReactNode => {
   const { state, dispatch } = useCalculatorContext()
@@ -23,6 +24,10 @@ const ConfigSection = (): ReactNode => {
     dispatch({ type: 'SET_CAR_RENTED', payload: v })
   }, [dispatch])
 
+  const handleCarOwnerChange = useCallback((owner: 'driver' | 'agency'): void => {
+    dispatch({ type: 'SET_CAR_OWNER', payload: owner })
+  }, [dispatch])
+
   const handleAgencyPercentChange = useCallback((v: number): void => {
     dispatch({ type: 'SET_AGENCY_PERCENT', payload: v })
   }, [dispatch])
@@ -38,7 +43,7 @@ const ConfigSection = (): ReactNode => {
   return (
     <div className="flex flex-col gap-4">
       <div className="p-3 rounded-xl bg-bg-input border border-border-subtle">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           <div className="flex-1">
             <Toggle
               label="Vehículo alquilado"
@@ -49,6 +54,17 @@ const ConfigSection = (): ReactNode => {
           <HelpHint text="Al activarlo, el % del vehículo se descuenta de la agencia y se agrega al reparto. Ajustá los porcentajes para que sumen 100%." side="bottom" align="end" />
         </div>
       </div>
+      {!state.carRented && (
+        <div className="flex items-center">
+          <div className="flex-1">
+
+            <CarOwnerSelector
+              value={state.carOwner ?? 'agency'}
+              onChange={handleCarOwnerChange}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <PercentageInput
@@ -75,11 +91,10 @@ const ConfigSection = (): ReactNode => {
       )}
 
       <div
-        className={`p-3 rounded-xl border flex items-start gap-2.5 transition-all duration-300 ${
-          isValid
-            ? 'bg-accent-teal/10 border-accent-teal/30'
-            : 'bg-accent-red/10 border-accent-red/30'
-        }`}
+        className={`p-3 rounded-xl border flex items-start gap-2.5 transition-all duration-300 ${isValid
+          ? 'bg-accent-teal/10 border-accent-teal/30'
+          : 'bg-accent-red/10 border-accent-red/30'
+          }`}
       >
         {isValid ? (
           <CheckCircle2 className="h-5 w-5 text-accent-teal flex-shrink-0 mt-0.5" aria-hidden="true" />
@@ -89,9 +104,8 @@ const ConfigSection = (): ReactNode => {
 
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-2">
-            <span className={`text-sm font-bold font-display ${
-              isValid ? 'text-accent-teal' : 'text-accent-red'
-            }`}>
+            <span className={`text-sm font-bold font-display ${isValid ? 'text-accent-teal' : 'text-accent-red'
+              }`}>
               Suma: {percentTotal}%
             </span>
             {!isValid && (

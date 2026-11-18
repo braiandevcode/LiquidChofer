@@ -2,8 +2,11 @@ import { useCallback, type ReactNode, type ChangeEvent } from 'react'
 import useCalculatorContext from '../../../core/context/useCalculatorContext'
 import Input from '../../../shared/ui/Input'
 
+const MAX_EXPENSE: number = 999_999_999
+
 const parseNumericInput = (e: ChangeEvent<HTMLInputElement>): number => {
-  return Number(e.target.value.replace(/\D/g, ''))
+  const cleaned: string = e.target.value.replace(/\D/g, '').slice(0, 9)
+  return Math.min(Number(cleaned), MAX_EXPENSE)
 }
 
 const ExpensesSection = (): ReactNode => {

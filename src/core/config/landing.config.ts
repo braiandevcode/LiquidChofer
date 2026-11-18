@@ -1,27 +1,27 @@
-import { Calculator, FileText, Smartphone } from 'lucide-react';
+import { Calculator, History, Sparkles } from 'lucide-react';
 import type { TLandingList } from '../types/featureItems';
 
 const features: TLandingList = [
   {
     id: crypto.randomUUID(),
     icon: Calculator,
-    title: "Calculá al instante",
-    desc: "Ingresá el total, los vales y los gastos. Todo se ajusta solo.",
+    title: "Cálculos automáticos",
+    desc: "El reparto de tu jornada, resuelto sin cuentas a mano.",
     iconColor: "text-accent-violet",
   },
   {
     id: crypto.randomUUID(),
-    icon: FileText,
-    title: "Comprobante al toque",
-    desc: "Descargá PDF o compartí por WhatsApp el resumen de tu jornada.",
-    iconColor: "text-accent-green",
+    icon: Sparkles,
+    title: "Ayuda de ChófIA",
+    desc: "Tu copiloto para dudas sobre la app y para el cálculo de tu jornada.",
+    iconColor: "text-accent-amber",
   },
   {
     id: crypto.randomUUID(),
-    icon: Smartphone,
-    title: "Sin registro, sin vueltas",
-    desc: "Todo queda guardado en tu dispositivo. Usalo sin internet.",
-    iconColor: "text-accent-violet-soft",
+    icon: History,
+    title: "Tus jornadas, guardadas",
+    desc: "Historial y recibos listos para cuando los necesites, en cualquier dispositivo.",
+    iconColor: "text-accent-green",
   },
 ];
 

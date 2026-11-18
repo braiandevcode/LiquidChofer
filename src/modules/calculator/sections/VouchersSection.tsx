@@ -30,7 +30,7 @@ const VouchersSection = (): ReactNode => {
           onChange={handleShowVouchersChange}
         />
         {hasSavedVouchers && (
-          <p className="mt-2 text-xs text-text-muted/70">
+          <p className="mt-2 text-xs text-text-secondary">
             Eliminá o reiniciá los vales guardados para cambiar esta opción
           </p>
         )}
