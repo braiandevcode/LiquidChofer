@@ -1,7 +1,9 @@
 import type { IParsedError } from "../interfaces/IParsedError"
 
 // URL base del backend NestJS. Se configura en VITE_API_URL o se asume local.
-const API_BASE_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const API_BASE_URL: string = import.meta.env.PROD
+  ? ''
+  : (import.meta.env.VITE_API_URL ?? 'http://localhost:3000')
 
 // Rutas publicas de sesion: no deben disparar el refresh automatico.
 const LOGIN_PATH: string = '/api/v1/auth/login'
