@@ -27,11 +27,12 @@ const ChatView = (): ReactNode => {
     startNewChat,
     confirmCalculation,
     sendMessage,
+    isCalculationSaved,
+    markCalculationSaved,
   } = useChat()
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
   const [pendingSaveCalculation, setPendingSaveCalculation] = useState<ICalculationState | null>(null)
   const [savedJourney, setSavedJourney] = useState<IJourneyDetail | null>(null)
-  const [savedCalculationId, setSavedCalculationId] = useState<string | null>(null)
   const [savedReceiptOpen, setSavedReceiptOpen] = useState<boolean>(false)
   const composerRef = useRef<IChatComposerHandle | null>(null)
   const lastFocusTokenRef = useRef<number>(newChatFocusToken)
@@ -53,11 +54,16 @@ const ChatView = (): ReactNode => {
   }, [])
 
   // SOLO MARCO LA JORNADA COMO GUARDADA CUANDO EL BACKEND CONFIRMA LA CREACION.
-  const HANDLE_JOURNEY_SAVED = useCallback((journey: IJourneyDetail): void => {
-    setSavedJourney(journey)
-    setSavedCalculationId(pendingSaveCalculation?.id ?? null)
-    setPendingSaveCalculation(null)
-  }, [pendingSaveCalculation])
+  const HANDLE_JOURNEY_SAVED = useCallback(
+    (journey: IJourneyDetail): void => {
+      setSavedJourney(journey)
+      if (pendingSaveCalculation) {
+        markCalculationSaved(pendingSaveCalculation.id, journey.id)
+      }
+      setPendingSaveCalculation(null)
+    },
+    [pendingSaveCalculation, markCalculationSaved],
+  )
 
   const HANDLE_OPEN_SAVED_RECEIPT = useCallback((): void => setSavedReceiptOpen(true), [])
   const HANDLE_CLOSE_SAVED_RECEIPT = useCallback((): void => setSavedReceiptOpen(false), [])
@@ -173,7 +179,7 @@ const ChatView = (): ReactNode => {
                 confirmDisabled={composerDisabled}
                 onConfirmCalculation={confirmCalculation}
                 onSaveCalculation={HANDLE_SAVE_CALCULATION}
-                savedCalculationId={savedCalculationId}
+                isCalculationSaved={isCalculationSaved}
               />
             )}
 

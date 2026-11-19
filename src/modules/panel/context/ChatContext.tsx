@@ -65,6 +65,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
   const [isNewChat, setIsNewChat] = useState<boolean>(false)
   const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false)
   const [newChatFocusToken, setNewChatFocusToken] = useState<number>(0)
+  const [savedCalculations, setSavedCalculations] = useState<Readonly<Record<string, string>>>({})
 
   const noUsage: boolean = usage !== null && usage.remaining <= 0
   const composerDisabled: boolean = isSending || noUsage
@@ -99,6 +100,17 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
       isActive = false
     }
   }, [isChatRoute])
+
+  // MARCO EL CIERRE CON EL ID DE JORNADA QUE CONFIRMA EL BACKEND.
+  const MARK_CALCULATION_SAVED = useCallback((calculationId: string, journeyId: string): void => {
+    setSavedCalculations((prev) => ({ ...prev, [calculationId]: journeyId }))
+  }, [])
+
+  // CONSULTO POR ID: UN CIERRE NUEVO NUNCA HEREDA EL ESTADO DE UNO GUARDADO.
+  const IS_CALCULATION_SAVED = useCallback(
+    (calculationId: string): boolean => Object.hasOwn(savedCalculations, calculationId),
+    [savedCalculations],
+  )
 
   useEffect(() => {
     if (isChatRoute) return
@@ -262,6 +274,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
       deleteConversation: DELETE_CONVERSATION,
       sendMessage: SEND_MESSAGE,
       confirmCalculation: CONFIRM_CALCULATION,
+      isCalculationSaved: IS_CALCULATION_SAVED,
+      markCalculationSaved: MARK_CALCULATION_SAVED,
       openHistory: OPEN_HISTORY,
       closeHistory: CLOSE_HISTORY,
       refreshList: LIST_REFRESH,
@@ -284,6 +298,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
       DELETE_CONVERSATION,
       SEND_MESSAGE,
       CONFIRM_CALCULATION,
+      IS_CALCULATION_SAVED,
+      MARK_CALCULATION_SAVED,
       OPEN_HISTORY,
       CLOSE_HISTORY,
       LIST_REFRESH,
