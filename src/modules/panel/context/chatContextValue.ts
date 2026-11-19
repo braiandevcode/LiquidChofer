@@ -21,7 +21,7 @@ export interface IChatContextValue {
   deleteConversation: (conversationId: string) => Promise<boolean>
   sendMessage: (text: string, imagesData: string[]) => Promise<boolean>
   confirmCalculation: (conversationId: string) => Promise<boolean>
-  isCalculationSaved: (calculationId: string) => boolean
+  getSavedJourneyId: (calculationId: string) => string | null
   markCalculationSaved: (calculationId: string, journeyId: string) => void
   openHistory: () => void
   closeHistory: () => void

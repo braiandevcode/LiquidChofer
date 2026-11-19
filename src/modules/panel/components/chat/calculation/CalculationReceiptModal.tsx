@@ -8,13 +8,14 @@ import StatusBanner from '../../../../../shared/styles/StatusBanner'
 import CalculationReceiptContent from './CalculationReceiptContent'
 import { HAS_RESULT } from './calculation.utils'
 import type { ICalculationState } from '../../../../../core/interfaces/ICalculationState'
+import { useJourneyShareStatus } from '../../../../../core/hooks/useJourneyShareStatus'
 
 interface ICalculationReceiptModalProps {
   calculation: ICalculationState
   isOpen: boolean
   onClose: () => void
   onSave: (calculation: ICalculationState) => void
-  isSaved: boolean
+  journeyId: string | null
 }
 
 // VISTA PREVIA DEL CALCULO DE CHOFIA: SOLO PERMITE GUARDAR LA JORNADA.
@@ -24,9 +25,14 @@ const CalculationReceiptModal = ({
   isOpen,
   onClose,
   onSave,
-  isSaved,
+  journeyId,
 }: ICalculationReceiptModalProps): ReactNode => {
   const modalRef = useFocusTrap(isOpen)
+
+  // EL BACKEND MANDA: SOLO OCULTO "GUARDAR" SI share-status CONFIRMA UNA JORNADA ACTIVA.
+  const { viewState, shareable } = useJourneyShareStatus(journeyId, isOpen)
+  const isJourneySaved: boolean = journeyId !== null && viewState === 'ready' && shareable
+  const isVerifyingJourney: boolean = viewState === 'loading'
 
   const receiptId: string = `calculation-receipt-${calculation.id}`
   const titleId: string = `calculation-receipt-title-${calculation.id}`
@@ -89,10 +95,14 @@ const CalculationReceiptModal = ({
           </div>
 
           <div className="flex shrink-0 flex-col gap-2 border-t border-border-subtle p-4 no-print">
-            {isSaved ? (
+            {viewState === 'error' ? (
+              <StatusBanner variant="error">No se pudo verificar el estado de la jornada.</StatusBanner>
+            ) : isJourneySaved ? (
               <StatusBanner variant="info">
                 Jornada guardada. Descargá y compartí el recibo desde el historial.
               </StatusBanner>
+            ) : isVerifyingJourney ? (
+              <p className="text-center text-xs text-text-muted">Verificando el estado de la jornada...</p>
             ) : (
               <Button
                 variant="primary"
