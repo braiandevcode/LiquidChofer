@@ -10,4 +10,6 @@ export interface ICalculationState {
   input: Partial<ICalculationInput>
   result?: ICalculationResult
   updatedAt: string
+  // Jornada activa que el backend resolvio para este calculo (fuente de verdad).
+  savedJourneyId?: string | null
 }

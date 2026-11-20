@@ -11,7 +11,6 @@ interface ICalculationCardProps {
   confirmDisabled: boolean
   onConfirm: (conversationId: string) => Promise<boolean>
   onSave: (calculation: ICalculationState) => void
-  journeyId: string | null
 }
 
 interface ISummaryRowProps {
@@ -58,7 +57,6 @@ const CalculationCard = ({
   confirmDisabled,
   onConfirm,
   onSave,
-  journeyId,
 }: ICalculationCardProps): ReactNode => {
   const [isConfirming, setIsConfirming] = useState<boolean>(false)
   const [isReceiptOpen, setIsReceiptOpen] = useState<boolean>(false)
@@ -181,7 +179,7 @@ const CalculationCard = ({
           isOpen={isReceiptOpen}
           onClose={HANDLE_CLOSE_RECEIPT}
           onSave={onSave}
-          journeyId={journeyId}
+          journeyId={calculation.savedJourneyId ?? null}
         />
       </>
     )

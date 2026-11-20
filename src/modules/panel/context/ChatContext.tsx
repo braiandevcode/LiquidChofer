@@ -9,6 +9,7 @@ import {
   sendChatMessage,
 } from '../../../core/services/chat.service'
 import type { IChatMessageState } from '../../../core/interfaces/IChatMessageState'
+import type { ICalculationState } from '../../../core/interfaces/ICalculationState'
 import type { IChatResponse } from '../../../core/interfaces/IChatResponse'
 import type { IConversation } from '../../../core/interfaces/IConversation'
 import type { IConversationMessage } from '../../../core/interfaces/IConversationMessage'
@@ -51,32 +52,6 @@ const SEND_FAILURE_MESSAGE = (err: unknown, hasImages: boolean): string =>
 const SORT_CONVERSATIONS = (items: IConversation[]): IConversation[] =>
   items.toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
-const SAVED_CALCULATIONS_STORAGE_KEY: string = 'liquidchofer-saved-calculations'
-
-// CACHEO SOLO EL ID DE JORNADA: EL ESTADO REAL LO CONFIRMA EL BACKEND CON share-status.
-const READ_SAVED_CALCULATIONS = (): Readonly<Record<string, string>> => {
-  try {
-    const raw: string | null = localStorage.getItem(SAVED_CALCULATIONS_STORAGE_KEY)
-    if (!raw) return {}
-    const parsed: unknown = JSON.parse(raw)
-    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {}
-    const entries: [string, unknown][] = Object.entries(parsed as Record<string, unknown>)
-    return Object.fromEntries(
-      entries.filter((entry): entry is [string, string] => typeof entry[1] === 'string'),
-    )
-  } catch {
-    return {}
-  }
-}
-
-const WRITE_SAVED_CALCULATIONS = (items: Readonly<Record<string, string>>): void => {
-  try {
-    localStorage.setItem(SAVED_CALCULATIONS_STORAGE_KEY, JSON.stringify(items))
-  } catch {
-    // localStorage no disponible
-  }
-}
-
 export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode => {
   const location = useLocation()
   const isChatRoute: boolean =
@@ -91,9 +66,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
   const [isNewChat, setIsNewChat] = useState<boolean>(false)
   const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false)
   const [newChatFocusToken, setNewChatFocusToken] = useState<number>(0)
-  const [savedCalculations, setSavedCalculations] = useState<Readonly<Record<string, string>>>(
-    READ_SAVED_CALCULATIONS,
-  )
 
   const noUsage: boolean = usage !== null && usage.remaining <= 0
   const composerDisabled: boolean = isSending || noUsage
@@ -129,20 +101,16 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
     }
   }, [isChatRoute])
 
-  // MARCO EL CIERRE CON EL ID DE JORNADA QUE CONFIRMA EL BACKEND Y LO CACHEO ENTRE RECARGAS.
+  // REFLEJO EN EL MENSAJE LA JORNADA QUE CONFIRMO EL BACKEND; TRAS RECARGAR LA TRAE EL PROPIO CALCULO.
   const MARK_CALCULATION_SAVED = useCallback((calculationId: string, journeyId: string): void => {
-    setSavedCalculations((prev) => {
-      const next: Readonly<Record<string, string>> = { ...prev, [calculationId]: journeyId }
-      WRITE_SAVED_CALCULATIONS(next)
-      return next
-    })
+    setMessages((prev) =>
+      prev.map((message) => {
+        const calculation: ICalculationState | null | undefined = message.calculation
+        if (!calculation || calculation.id !== calculationId) return message
+        return { ...message, calculation: { ...calculation, savedJourneyId: journeyId } }
+      }),
+    )
   }, [])
-
-  // DEVUELVO EL ID CACHEADO; LA DECISION LA TOMA EL BACKEND AL CONSULTAR share-status.
-  const GET_SAVED_JOURNEY_ID = useCallback(
-    (calculationId: string): string | null => savedCalculations[calculationId] ?? null,
-    [savedCalculations],
-  )
 
   useEffect(() => {
     if (isChatRoute) return
@@ -306,7 +274,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
       deleteConversation: DELETE_CONVERSATION,
       sendMessage: SEND_MESSAGE,
       confirmCalculation: CONFIRM_CALCULATION,
-      getSavedJourneyId: GET_SAVED_JOURNEY_ID,
       markCalculationSaved: MARK_CALCULATION_SAVED,
       openHistory: OPEN_HISTORY,
       closeHistory: CLOSE_HISTORY,
@@ -330,7 +297,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
       DELETE_CONVERSATION,
       SEND_MESSAGE,
       CONFIRM_CALCULATION,
-      GET_SAVED_JOURNEY_ID,
       MARK_CALCULATION_SAVED,
       OPEN_HISTORY,
       CLOSE_HISTORY,

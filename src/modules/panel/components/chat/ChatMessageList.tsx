@@ -14,7 +14,6 @@ interface IChatMessageListProps {
   confirmDisabled: boolean
   onConfirmCalculation: (conversationId: string) => Promise<boolean>
   onSaveCalculation: (calculation: ICalculationState) => void
-  getSavedJourneyId: (calculationId: string) => string | null
 }
 
 interface IRenderedImage {
@@ -77,7 +76,6 @@ const ChatMessageList = ({
   confirmDisabled,
   onConfirmCalculation,
   onSaveCalculation,
-  getSavedJourneyId,
 }: IChatMessageListProps): ReactNode => {
   const bottomRef = useRef<HTMLDivElement | null>(null)
   const [previewImage, setPreviewImage] = useState<IRenderedImage | null>(null)
@@ -135,7 +133,6 @@ const ChatMessageList = ({
                       confirmDisabled={confirmDisabled}
                       onConfirm={onConfirmCalculation}
                       onSave={onSaveCalculation}
-                      journeyId={getSavedJourneyId(message.calculation.id)}
                     />
                   )}
                 </>

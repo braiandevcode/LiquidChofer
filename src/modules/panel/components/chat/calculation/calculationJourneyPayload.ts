@@ -40,5 +40,6 @@ export const TO_CHAT_JOURNEY_PAYLOAD = (
     petrol: input.fuel ?? 0,
     vouchers,
     replaceExisting,
+    sourceCalculationId: calculation.id,
   }
 }

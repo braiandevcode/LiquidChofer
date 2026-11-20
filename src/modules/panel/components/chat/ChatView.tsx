@@ -27,7 +27,6 @@ const ChatView = (): ReactNode => {
     startNewChat,
     confirmCalculation,
     sendMessage,
-    getSavedJourneyId,
     markCalculationSaved,
   } = useChat()
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
@@ -179,7 +178,6 @@ const ChatView = (): ReactNode => {
                 confirmDisabled={composerDisabled}
                 onConfirmCalculation={confirmCalculation}
                 onSaveCalculation={HANDLE_SAVE_CALCULATION}
-                getSavedJourneyId={getSavedJourneyId}
               />
             )}
 

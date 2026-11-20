@@ -26,6 +26,8 @@ export interface ICreateJourneyPayload {
   vouchers: IJourneyVoucherInput[]
   // Solo se envia al confirmar el reemplazo de una jornada ya guardada para esa fecha.
   replaceExisting?: boolean
+  // Calculo de Chofia que origino el guardado; el backend lo vincula a la jornada.
+  sourceCalculationId?: string
 }
 
 // Jornada guardada con los importes que calculo y persistio el backend.
