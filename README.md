@@ -148,28 +148,27 @@ Copiá `.env.example` a `.env` y completá los valores. **No subas `.env` al rep
 
 | Variable | Requerida | Descripción | Ejemplo |
 | --- | --- | --- | --- |
-| `VITE_API_URL` | Sí | URL base del backend NestJS | `http://localhost:3000` |
-| `VITE_URL_ORIGIN` | Sí | Origen público usado en el QR y el link de verificación (sin barra final) | `http://localhost:5173` |
+| `VITE_GITHUB` | No | URL del repositorio para el enlace del footer | `URL_DE_REPOSITORIO` |
+| `VITE_DOMAIN` | Producción | Dominio público (SEO: canonical, sitemap y robots.txt) | `TU_DOMINIO` |
+| `VITE_MAINTENANCE_MODE` | No | Activa la pantalla de mantenimiento (`1` = activo) | `0` |
+| `VITE_API_URL` | Sí | URL base del backend NestJS | `<URL_DESTINO>` |
+| `VITE_URL_ORIGIN` | Sí | Origen público usado en el QR y el link de verificación (sin barra final) | `<URL_ORIGEN>` |
+| `VITE_GA_ID` | No | Medición de visitas. Dejar vacío para desactivar | `<GA_ID>` |
 | `VITE_CODE_LENGTH` | No | Largo del código de verificación del recibo | `<CODE_LENGTH>` |
 | `VITE_ZONE` | No | Zona horaria usada en las jornadas | `<ZONA>` |
-| `VITE_DOMAIN` | Producción | Dominio público usado en canonical, sitemap y robots | `https://tu-dominio.com` |
-| `VITE_GITHUB` | No | URL del repositorio para el enlace del footer | `https://github.com/usuario/repo` |
-| `VITE_MAINTENANCE_MODE` | No | Activa la pantalla de mantenimiento (`1` = activo) | `0` |
-| `VITE_GA_ID` | No | ID de medición de visitas. Si está vacío, no se carga | `G-XXXXXXXXXX` |
-| `VITE_S_OLAVARRIA_SERVICIOS` | No | Enlace del patrocinador | `https://ejemplo.com` |
-| `VITE_S_OLAVARRIA_SERVICIOS_URL_IMAGE` | No | Imagen del banner del patrocinador | `https://ejemplo.com/banner.png` |
-| `VITE_S_OLAVARRIA_SERVICIOS_URL_LOGO` | No | Logo del patrocinador | `https://ejemplo.com/logo.png` |
-| `VITE_API_KEY` | Sí | Configuración web de Firebase | `<FIREBASE_API_KEY>` |
-| `VITE_AUTH_DOMAIN` | Sí | Configuración web de Firebase | `<PROYECTO>.firebaseapp.com` |
-| `VITE_PROJECT_ID` | Sí | Configuración web de Firebase | `<PROYECTO>` |
-| `VITE_STORAGE_BUCKET` | Sí | Configuración web de Firebase | `<PROYECTO>.appspot.com` |
-| `VITE_SENDER_ID` | Sí | Configuración web de Firebase | `<SENDER_ID>` |
-| `VITE_APP_ID` | Sí | Configuración web de Firebase | `<APP_ID>` |
+| `VITE_S_OLAVARRIA_SERVICIOS` | No | Enlace del patrocinador (opcional) | `<URL_PATROCINADOR>` |
+| `VITE_S_OLAVARRIA_SERVICIOS_URL_IMAGE` | No | Imagen del banner del patrocinador | `URL_DE_LA_IMAGEN` |
+| `VITE_S_OLAVARRIA_SERVICIOS_URL_LOGO` | No | Logo del patrocinador | `URL_DEL_LOGO` |
+| `VITE_API_KEY` | Sí | Firebase Web (solo autenticación) | `<API_KEY>` |
+| `VITE_PROJECT_ID` | Sí | Firebase Web (solo autenticación) | `<PROJECT_ID>` |
+| `VITE_SENDER_ID` | Sí | Firebase Web (solo autenticación) | `<SENDER_ID>` |
+| `VITE_AUTH_DOMAIN` | Sí | Firebase Web (solo autenticación) | `<AUTH_DOMAIN>` |
+| `VITE_STORAGE_BUCKET` | Sí | Firebase Web (solo autenticación) | `<STORAGE_BUCKET>` |
+| `VITE_APP_ID` | Sí | Firebase Web (solo autenticación) | `<APP_ID>` |
 
 Notas:
 
 - Las variables `VITE_*` quedan visibles en el bundle del navegador. La configuración web de Firebase es pública por diseño, pero conviene restringirla en la consola de Firebase a los dominios autorizados.
-- Si venís de una versión anterior, `VITE_MEASUREMENT_ID` y `VITE_IG` ya no se usan y podés borrarlas de tu `.env`.
 - Para producción, definí `VITE_API_URL` y `VITE_DOMAIN` con los valores reales del despliegue.
 
 ## Uso Local
