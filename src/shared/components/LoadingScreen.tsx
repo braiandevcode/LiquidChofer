@@ -1,4 +1,3 @@
-
 import type { ReactNode } from 'react';
 import LoadingDots from '../styles/LoadingDots';
 
