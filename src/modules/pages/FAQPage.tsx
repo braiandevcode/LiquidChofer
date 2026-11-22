@@ -3,8 +3,9 @@ import { HelpCircle, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { SPONSORS } from '../../core/config/sponsor.config'
 import SponsorBanner from '../../shared/components/SponsorBanner'
-import faqItems from '../../core/config/FAQPage.config'
+import faqCategories from '../../core/config/FAQPage.config'
 import Accordion from '../../shared/ui/Accordion'
+import BackToTopButton from '../../shared/ui/BackToTopButton'
 
 const FAQPage = (): ReactNode => {
   const [showSponsor, setShowSponsor] = useState(false)
@@ -17,30 +18,17 @@ const FAQPage = (): ReactNode => {
 
   return (
     <div className="min-safe">
-      {/* Desktop: fixed left sidebar (xl+) */}
-      <div
-        className={`hidden xl:block fixed left-4 top-1/2 -translate-y-1/2 z-30 w-48 2xl:w-60 transition-all duration-700 ease-out ${showSponsor ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}`}
-      >
-        <SponsorBanner
-          imageUrl={SPONSORS[0].imageUrl}
-          linkUrl={SPONSORS[0].linkUrl}
-          alt={SPONSORS[0].alt}
-        />
-      </div>
-
-      {/* Mobile: sticky slide from top with dismiss */}
-      <div className="sticky top-17 z-20 xl:hidden bg-bg-deep">
+      {/* Única instancia del patrocinador: sticky en móvil, fija a la izquierda en desktop */}
+      <div className="sticky top-17 z-20 bg-bg-deep xl:fixed xl:left-4 xl:top-1/2 xl:z-10 xl:w-48 xl:-translate-y-1/2 2xl:w-60">
         <div
-          className={`transition-all duration-700 ease-out overflow-hidden ${showSponsor ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}`}
+          className={`mx-auto max-w-3xl px-4 pt-2 transition-opacity duration-700 ease-out md:px-6 xl:mx-0 xl:px-0 xl:pt-0 ${showSponsor ? 'opacity-100' : 'opacity-0'}`}
         >
-          <div className="mx-auto max-w-3xl px-4 pt-2 md:px-6">
-            <SponsorBanner
-              imageUrl={SPONSORS[0].imageUrl}
-              linkUrl={SPONSORS[0].linkUrl}
-              alt={SPONSORS[0].alt}
-              dismissible
-            />
-          </div>
+          <SponsorBanner
+            imageUrl={SPONSORS[0].imageUrl}
+            linkUrl={SPONSORS[0].linkUrl}
+            alt={SPONSORS[0].alt}
+            dismissible
+          />
         </div>
       </div>
 
@@ -66,8 +54,43 @@ const FAQPage = (): ReactNode => {
           </p>
         </div>
 
+        <nav
+          id="faq-indice"
+          aria-label="Índice de preguntas frecuentes"
+          className="card-glass rounded-xl p-4 md:p-5 mb-8 scroll-mt-24 animate-fade-in-up stagger-1"
+        >
+          <p className="font-display text-sm font-bold text-text-primary mb-3">Saltar a…</p>
+          <ul className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
+            {faqCategories.map((category) => (
+              <li key={category.id}>
+                <a
+                  href={`#faq-${category.id}`}
+                  className="inline-flex min-h-11 items-center rounded-md text-sm font-medium text-accent-teal underline decoration-accent-teal/40 underline-offset-4 transition-colors hover:text-accent-teal-soft hover:decoration-accent-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50"
+                >
+                  {category.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
         <div className="animate-fade-in-up stagger-1">
-          <Accordion items={faqItems} />
+          {faqCategories.map((category, categoryIndex) => (
+            <section
+              key={category.id}
+              id={`faq-${category.id}`}
+              aria-labelledby={`faq-title-${category.id}`}
+              className="mt-8 scroll-mt-24 first:mt-0"
+            >
+              <h2
+                id={`faq-title-${category.id}`}
+                className="mb-3 font-display text-xl font-black tracking-tight text-text-primary"
+              >
+                {category.label}
+              </h2>
+              <Accordion items={category.items} defaultOpenIndex={categoryIndex === 0 ? 0 : -1} />
+            </section>
+          ))}
         </div>
 
         <div className="mt-10 p-6 card-glass rounded-2xl text-center animate-fade-in-up stagger-2">
@@ -78,8 +101,8 @@ const FAQPage = (): ReactNode => {
             Estamos acá para ayudarte
           </p>
         </div>
-
       </div>
+      <BackToTopButton />
     </div>
   )
 }

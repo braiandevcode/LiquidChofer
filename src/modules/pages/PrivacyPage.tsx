@@ -1,6 +1,22 @@
 import { ArrowLeft, Shield } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import BackToTopButton from '../../shared/ui/BackToTopButton'
+
+const PRIVACY_SECTIONS = [
+  { id: 'privacidad-1', label: 'Tu privacidad es importante' },
+  { id: 'privacidad-2', label: '¿Qué información guardamos?' },
+  { id: 'privacidad-3', label: '¿Para qué usamos la información?' },
+  { id: 'privacidad-4', label: '¿Dónde y cómo se guarda tu información?' },
+  { id: 'privacidad-5', label: '¿Cuánto tiempo la conservamos?' },
+  { id: 'privacidad-6', label: '¿Compartimos tus datos con alguien?' },
+  { id: 'privacidad-7', label: 'Medición de visitas' },
+  { id: 'privacidad-8', label: 'Tus derechos y controles' },
+  { id: 'privacidad-9', label: 'Seguridad' },
+  { id: 'privacidad-10', label: 'Menores de edad' },
+  { id: 'privacidad-11', label: 'Cambios en esta política' },
+  { id: 'privacidad-12', label: 'Contacto' },
+]
 
 const PrivacyPage = (): ReactNode => {
   const CURRENT_YEAR: number = new Date().getFullYear()
@@ -15,7 +31,7 @@ const PrivacyPage = (): ReactNode => {
           Volver al inicio
         </Link>
 
-        <div className="flex flex-col gap-2 mb-8 animate-fade-in-up">
+        <div id="privacidad-inicio" className="flex flex-col gap-2 mb-8 animate-fade-in-up scroll-mt-24">
           <div className="flex items-center gap-3 mb-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-teal/15 border border-accent-teal/20">
               <Shield className="h-5 w-5 text-accent-teal" aria-hidden="true" />
@@ -29,8 +45,24 @@ const PrivacyPage = (): ReactNode => {
           </p>
         </div>
 
+        <nav aria-label="Índice de la política de privacidad" className="card-glass rounded-xl p-4 md:p-5 mb-8 animate-fade-in-up">
+          <p className="font-display text-sm font-bold text-text-primary mb-3">Saltar a…</p>
+          <ul className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
+            {PRIVACY_SECTIONS.map((section) => (
+              <li key={section.id}>
+                <a
+                  href={`#${section.id}`}
+                  className="inline-flex min-h-11 items-center rounded-md text-sm font-medium text-accent-teal underline decoration-accent-teal/40 underline-offset-4 transition-colors hover:text-accent-teal-soft hover:decoration-accent-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50"
+                >
+                  {section.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
         <div className="space-y-8 animate-fade-in-up stagger-1">
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-1" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               Tu privacidad es importante
             </h2>
@@ -41,7 +73,7 @@ const PrivacyPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-2" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               ¿Qué información guardamos?
             </h2>
@@ -57,7 +89,7 @@ const PrivacyPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-3" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               ¿Para qué usamos la información?
             </h2>
@@ -71,7 +103,7 @@ const PrivacyPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-4" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               ¿Dónde y cómo se guarda tu información?
             </h2>
@@ -85,7 +117,7 @@ const PrivacyPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-5" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               ¿Cuánto tiempo la conservamos?
             </h2>
@@ -97,7 +129,7 @@ const PrivacyPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-6" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               ¿Compartimos tus datos con alguien?
             </h2>
@@ -113,7 +145,7 @@ const PrivacyPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-7" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               Medición de visitas
             </h2>
@@ -126,7 +158,7 @@ const PrivacyPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-8" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               Tus derechos y controles
             </h2>
@@ -142,7 +174,7 @@ const PrivacyPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-9" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               Seguridad
             </h2>
@@ -153,7 +185,7 @@ const PrivacyPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-10" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               Menores de edad
             </h2>
@@ -164,7 +196,7 @@ const PrivacyPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-11" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               Cambios en esta política
             </h2>
@@ -174,7 +206,7 @@ const PrivacyPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="privacidad-12" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               Contacto
             </h2>
@@ -191,6 +223,7 @@ const PrivacyPage = (): ReactNode => {
           </div>
         </div>
       </div>
+      <BackToTopButton />
     </div>
   )
 }

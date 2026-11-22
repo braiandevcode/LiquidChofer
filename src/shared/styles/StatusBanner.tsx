@@ -23,14 +23,18 @@ const ICON_CLASSES: Record<TStatusBannerVariant, string> = {
   success: 'text-accent-teal',
 }
 
+// ICONO Y TEXTO CENTRADOS: EL TAMANO DEL SVG SE FIJA AQUI, NO EN CADA LLAMADA.
 const StatusBanner = ({ variant, icon, children, className = '' }: IStatusBannerProps): ReactNode => (
-  <div className={`p-2.5 rounded-xl border flex items-start gap-2 ${VARIANT_CLASSES[variant]} ${className}`}>
+  <div
+    role={variant === 'error' ? 'alert' : 'status'}
+    className={`flex items-center gap-2.5 rounded-xl border p-3 ${VARIANT_CLASSES[variant]} ${className}`}
+  >
     {icon && (
-      <div className={`h-4 w-4 flex-shrink-0 mt-0.5 ${ICON_CLASSES[variant]}`}>
+      <div className={`flex h-5 w-5 shrink-0 items-center justify-center [&_svg]:h-4 [&_svg]:w-4 ${ICON_CLASSES[variant]}`}>
         {icon}
       </div>
     )}
-    <span className="text-xs text-text-secondary">{children}</span>
+    <span className="text-sm leading-snug text-text-primary">{children}</span>
   </div>
 )
 

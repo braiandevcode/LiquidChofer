@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children }: IProtectedRouteProps): ReactNode => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/ingresar" replace />
   }
 
   return children

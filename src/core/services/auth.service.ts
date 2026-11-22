@@ -102,7 +102,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 // VUELVE AL USUARIO DESPUES DE VERIFICAR EL CORREO O RESTABLECER LA CONTRASEÑA
 const ACTION_CODE_SETTINGS: ActionCodeSettings = {
-  url: APP_URL('/login'),
+  url: APP_URL('/ingresar'),
   handleCodeInApp: false,
 }
 

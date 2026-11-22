@@ -40,13 +40,24 @@ const LoginPage = (): ReactNode => {
   const navigate: NavigateFunction = useNavigate()
 
   // CAMBIO ENTRE LOS MODOS LOGIN Y REGISTRO Y LIMPIO LOS ESTADOS PREVIOS
-  const handleToggleMode = useCallback((): void => {
-    setMode((prev) => (prev === 'login' ? 'signup' : 'login'))
+  const handleSelectMode = useCallback((nextMode: TAuthMode): void => {
+    if (mode === nextMode) return
+    setMode(nextMode)
     setEmailError('')
     setPasswordError('')
     setBannerError('')
     setPassword('')
-  }, [])
+  }, [mode])
+
+  const flowLabel: string = isResetting
+    ? 'Recuperación de contraseña'
+    : pendingVerificationEmail
+      ? 'Verificación de correo'
+      : pendingGoogleEmail
+        ? 'Vinculación de cuenta'
+        : mode === 'login'
+          ? 'Ingreso'
+          : 'Creación de cuenta'
 
   // VALIDO LOS CAMPOS DEL FORMULARIO ANTES DE ENVIAR A FIREBASE
   const validateFields = useCallback((): boolean => {
@@ -210,6 +221,9 @@ const LoginPage = (): ReactNode => {
         <div className="card-glass card-accent-top rounded-2xl p-6 md:p-8">
           <div className="flex flex-col items-center text-center gap-3 mb-6">
             <img src="/logo.png" alt="LiquidChofer" className="h-16 w-16 rounded-2xl shadow-glow-violet" />
+            <p className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-accent-violet">
+              {flowLabel}
+            </p>
             <h1 className="text-2xl md:text-3xl font-black text-text-primary font-display tracking-tight">
               {isResetting
                 ? 'Restablecé tu contraseña'
@@ -242,8 +256,34 @@ const LoginPage = (): ReactNode => {
             </div>
           )}
 
+          {!pendingGoogleEmail && !pendingVerificationEmail && !isResetting && (
+            <div role="group" aria-label="Tipo de acceso" className="mb-6 grid grid-cols-2 gap-1.5 rounded-xl border border-border-subtle bg-bg-input/60 p-1.5">
+              <button
+                type="button"
+                onClick={() => handleSelectMode('login')}
+                disabled={isSubmitting}
+                aria-pressed={mode === 'login'}
+                className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 font-display text-sm font-bold transition-colors cursor-pointer disabled:opacity-50 ${mode === 'login' ? 'bg-accent-violet/15 text-accent-violet' : 'text-text-secondary hover:bg-bg-hover hover:text-text-primary'}`}
+              >
+                <Lock className="h-4 w-4" aria-hidden="true" />
+                Ingresar
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectMode('signup')}
+                disabled={isSubmitting}
+                aria-pressed={mode === 'signup'}
+                className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 font-display text-sm font-bold transition-colors cursor-pointer disabled:opacity-50 ${mode === 'signup' ? 'bg-accent-violet/15 text-accent-violet' : 'text-text-secondary hover:bg-bg-hover hover:text-text-primary'}`}
+              >
+                <UserPlus className="h-4 w-4" aria-hidden="true" />
+                Crear cuenta
+              </button>
+            </div>
+          )}
+
           {pendingGoogleEmail && (
-            <form onSubmit={handleCompleteLink} className="flex flex-col gap-4 animate-fade-in" noValidate>
+            <section aria-label="Vincular cuenta de Google" className="rounded-xl border border-accent-violet/20 bg-bg-input/40 p-4 animate-fade-in">
+            <form onSubmit={handleCompleteLink} className="flex flex-col gap-4" noValidate>
               <div className="rounded-xl border border-accent-violet/30 bg-accent-violet/10 px-4 py-3 text-sm leading-relaxed text-text-secondary font-display">
                 Ya existe una cuenta con{' '}
                 <strong className="text-text-primary">{pendingGoogleEmail}</strong>. Ingresá tu contraseña para
@@ -293,10 +333,12 @@ const LoginPage = (): ReactNode => {
                 Cancelar
               </button>
             </form>
+            </section>
           )}
 
           {pendingVerificationEmail && (
-            <div className="flex flex-col gap-4 animate-fade-in">
+            <section aria-label="Verificación de correo" className="rounded-xl border border-accent-violet/20 bg-bg-input/40 p-4 animate-fade-in">
+            <div className="flex flex-col gap-4">
               <div className="rounded-xl border border-accent-violet/30 bg-accent-violet/10 px-4 py-3 text-sm leading-relaxed text-text-secondary font-display">
                 <MailCheck className="h-5 w-5 mb-2" aria-hidden="true" />
                 Enviamos un enlace de verificación a{' '}
@@ -315,10 +357,12 @@ const LoginPage = (): ReactNode => {
                 Ya verifiqué, ingresar
               </Button>
             </div>
+            </section>
           )}
 
           {isResetting && (
-            <form onSubmit={handleSendReset} className="flex flex-col gap-4 animate-fade-in" noValidate>
+            <section aria-label="Recuperación de contraseña" className="rounded-xl border border-accent-violet/20 bg-bg-input/40 p-4 animate-fade-in">
+            <form onSubmit={handleSendReset} className="flex flex-col gap-4" noValidate>
               <div>
                 <label htmlFor="reset-email" className="text-base font-bold text-text-primary font-display tracking-wide">
                   Correo electrónico
@@ -364,9 +408,10 @@ const LoginPage = (): ReactNode => {
                 disabled={isSubmitting}
                 className="mx-auto text-sm font-medium text-text-secondary hover:text-accent-violet transition-colors cursor-pointer font-display disabled:opacity-50"
               >
-                Volver
+                Volver al ingreso
               </button>
             </form>
+            </section>
           )}
 
 
@@ -435,7 +480,7 @@ const LoginPage = (): ReactNode => {
                       type="button"
                       onClick={handleOpenReset}
                       disabled={isSubmitting}
-                      className="mt-2 text-sm font-medium text-text-secondary hover:text-accent-violet transition-colors cursor-pointer font-display disabled:opacity-50"
+                      className="mt-3 block w-full border-t border-border-subtle pt-3 text-left text-sm font-medium text-text-secondary transition-colors cursor-pointer hover:text-accent-violet font-display disabled:opacity-50"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>
@@ -481,25 +526,14 @@ const LoginPage = (): ReactNode => {
                 </Button>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-border-subtle stagger-4">
-                <button
-                  type="button"
-                  onClick={handleToggleMode}
-                  disabled={isSubmitting}
-                  className="flex items-center justify-center gap-2 mx-auto text-sm font-medium text-text-secondary hover:text-accent-violet transition-colors cursor-pointer font-display disabled:opacity-50"
-                >
-                  {mode === 'login' ? <UserPlus className="h-4 w-4" aria-hidden="true" /> : <Lock className="h-4 w-4" aria-hidden="true" />}
-                  {mode === 'login' ? '¿No tenés cuenta? Registrate' : '¿Ya tenés cuenta? Ingresá'}
-                </button>
-              </div>
             </>
           )}
         </div>
 
         <p className="text-center mt-6 text-xs text-text-muted font-display">
           Al continuar aceptás los{' '}
-          <a href="/terms" className="text-accent-violet hover:underline">Términos</a> y la{' '}
-          <a href="/privacy" className="text-accent-violet hover:underline">Política de Privacidad</a>.
+          <a href="/terminos" className="text-accent-violet hover:underline">Términos</a> y la{' '}
+          <a href="/privacidad" className="text-accent-violet hover:underline">Política de Privacidad</a>.
         </p>
       </div>
     </div>

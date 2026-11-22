@@ -160,7 +160,7 @@ const ConversationList = ({
                   aria-label="Eliminar conversación"
                   title="Eliminar conversación"
                   className={cn(
-                    'flex touch-manipulation items-center justify-center rounded-md text-text-muted opacity-100 transition-colors cursor-pointer hover:bg-accent-red/10 hover:text-accent-red active:scale-95 md:opacity-0 md:group-hover:opacity-100',
+                    'flex touch-manipulation items-center justify-center rounded-md text-text-muted opacity-100 transition-colors cursor-pointer hover:bg-accent-red/10 hover:text-accent-red active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-red/50',
                     actionSize,
                   )}
                 >

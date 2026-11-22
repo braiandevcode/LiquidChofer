@@ -23,9 +23,8 @@ const SettingsAccountCard = (): ReactNode => {
       title="Cuenta y seguridad"
       description="Administrá el acceso a tu cuenta."
       tone="red"
-      className="lg:col-span-2"
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex max-w-2xl flex-col gap-3">
         <div className="rounded-xl border border-border-subtle bg-bg-input/60 p-3">
           <p className="text-xs text-text-muted">Sesión iniciada como</p>
           <p className="truncate text-sm font-bold text-text-primary">
@@ -47,13 +46,13 @@ const SettingsAccountCard = (): ReactNode => {
 
         <div className="flex flex-wrap gap-x-4 gap-y-1 border-t border-border-subtle pt-3 text-xs">
           <Link
-            to="/privacy"
+            to="/privacidad"
             className="text-text-secondary transition-colors hover:text-accent-violet"
           >
             Política de privacidad
           </Link>
           <Link
-            to="/terms"
+            to="/terminos"
             className="text-text-secondary transition-colors hover:text-accent-violet"
           >
             Términos y condiciones

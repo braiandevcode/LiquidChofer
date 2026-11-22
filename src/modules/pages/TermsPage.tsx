@@ -1,6 +1,24 @@
 import { ArrowLeft, FileText } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import BackToTopButton from '../../shared/ui/BackToTopButton'
+
+const TERMS_SECTIONS = [
+  { id: 'terminos-1', label: '1. Aceptación' },
+  { id: 'terminos-2', label: '2. ¿Qué hace LiquidChofer?' },
+  { id: 'terminos-3', label: '3. Tu cuenta' },
+  { id: 'terminos-4', label: '4. Uso permitido' },
+  { id: 'terminos-5', label: '5. Cálculos y limitaciones' },
+  { id: 'terminos-6', label: '6. Jornadas guardadas e historial' },
+  { id: 'terminos-7', label: '7. ChófIA y contenido que enviás' },
+  { id: 'terminos-8', label: '8. Disponibilidad y mantenimiento' },
+  { id: 'terminos-9', label: '9. Propiedad intelectual' },
+  { id: 'terminos-10', label: '10. Límite de responsabilidad' },
+  { id: 'terminos-11', label: '11. Baja de cuenta' },
+  { id: 'terminos-12', label: '12. Cambios' },
+  { id: 'terminos-13', label: '13. Ley aplicable' },
+  { id: 'terminos-14', label: '14. Contacto' },
+]
 
 const TermsPage = (): ReactNode => {
   const currentYear: number = new Date().getFullYear()
@@ -15,7 +33,7 @@ const TermsPage = (): ReactNode => {
           Volver al inicio
         </Link>
 
-        <div className="flex flex-col gap-2 mb-8 animate-fade-in-up">
+        <div id="terminos-inicio" className="flex flex-col gap-2 mb-8 animate-fade-in-up scroll-mt-24">
           <div className="flex items-center gap-3 mb-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-amber/15 border border-accent-amber/20">
               <FileText className="h-5 w-5 text-accent-amber" aria-hidden="true" />
@@ -29,8 +47,24 @@ const TermsPage = (): ReactNode => {
           </p>
         </div>
 
+        <nav aria-label="Índice de términos y condiciones" className="card-glass rounded-xl p-4 md:p-5 mb-8 animate-fade-in-up">
+          <p className="font-display text-sm font-bold text-text-primary mb-3">Saltar a…</p>
+          <ul className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
+            {TERMS_SECTIONS.map((section) => (
+              <li key={section.id}>
+                <a
+                  href={`#${section.id}`}
+                  className="inline-flex min-h-11 items-center rounded-md text-sm font-medium text-accent-amber underline decoration-accent-amber/40 underline-offset-4 transition-colors hover:text-accent-amber-soft hover:decoration-accent-amber focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber/50"
+                >
+                  {section.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
         <div className="space-y-8 animate-fade-in-up stagger-1">
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-1" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               1. Aceptación
             </h2>
@@ -40,7 +74,7 @@ const TermsPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-2" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               2. ¿Qué hace LiquidChofer?
             </h2>
@@ -58,7 +92,7 @@ const TermsPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-3" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               3. Tu cuenta
             </h2>
@@ -74,7 +108,7 @@ const TermsPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-4" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               4. Uso permitido
             </h2>
@@ -91,7 +125,7 @@ const TermsPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-5" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               5. Cálculos y limitaciones
             </h2>
@@ -105,7 +139,7 @@ const TermsPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-6" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               6. Jornadas guardadas e historial
             </h2>
@@ -121,7 +155,7 @@ const TermsPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-7" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               7. ChófIA y contenido que enviás
             </h2>
@@ -138,7 +172,7 @@ const TermsPage = (): ReactNode => {
             </ul>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-8" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               8. Disponibilidad y mantenimiento
             </h2>
@@ -150,7 +184,7 @@ const TermsPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-9" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               9. Propiedad intelectual
             </h2>
@@ -162,7 +196,7 @@ const TermsPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-10" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               10. Límite de responsabilidad
             </h2>
@@ -174,7 +208,7 @@ const TermsPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-11" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               11. Baja de cuenta
             </h2>
@@ -185,7 +219,7 @@ const TermsPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-12" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               12. Cambios
             </h2>
@@ -196,7 +230,7 @@ const TermsPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-13" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               13. Ley aplicable
             </h2>
@@ -206,7 +240,7 @@ const TermsPage = (): ReactNode => {
             </p>
           </section>
 
-          <section className="card-glass rounded-xl p-6">
+          <section id="terminos-14" className="card-glass rounded-xl p-6 scroll-mt-24">
             <h2 className="text-xl font-bold text-text-primary font-display mb-4">
               14. Contacto
             </h2>
@@ -223,6 +257,7 @@ const TermsPage = (): ReactNode => {
           </div>
         </div>
       </div>
+      <BackToTopButton />
     </div>
   )
 }

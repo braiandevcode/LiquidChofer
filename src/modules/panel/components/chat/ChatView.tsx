@@ -68,7 +68,7 @@ const ChatView = (): ReactNode => {
   const HANDLE_CLOSE_SAVED_RECEIPT = useCallback((): void => setSavedReceiptOpen(false), [])
 
   return (
-    <section className="flex h-[calc(100dvh-15rem)] min-h-0 gap-3 md:h-[calc(100dvh-8rem)] md:min-h-[420px] md:gap-4">
+    <section className="flex min-h-[16rem] flex-1 gap-3 md:min-h-0 md:gap-4">
       {isHistoryOpen ? (
         <ConversationHistoryView />
       ) : (

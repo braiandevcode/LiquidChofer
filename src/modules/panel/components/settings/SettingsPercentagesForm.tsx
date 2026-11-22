@@ -293,7 +293,7 @@ export const SettingsPercentagesForm = ({
           </Button>
 
           <Link
-            to="/panel"
+            to="/panel/calculadora"
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-bg-card px-6 py-3 font-display text-sm font-semibold text-text-primary transition-colors hover:border-border-emphasis hover:bg-bg-hover focus:outline-none focus:ring-2 focus:ring-accent-violet/30"
           >
             <Calculator className="h-4 w-4" aria-hidden="true" />

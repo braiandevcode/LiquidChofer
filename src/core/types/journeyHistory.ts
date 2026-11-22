@@ -137,6 +137,8 @@ export interface IJourneyTrashItem {
   replacedById: string | null
   // Fecha en que la purga automatica la borra definitivamente (deletedAt + 30 dias).
   purgeAt: string | null
+  // Codigo publico de auditoria. Solo presente cuando el backend lo expone en la papelera.
+  verificationCode?: string
 }
 
 // Respuesta paginada de GET /api/v1/journeys/trash.
