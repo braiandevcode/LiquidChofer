@@ -101,6 +101,8 @@ La app permite:
 - Metadatos Open Graph y Twitter Cards.
 - `sitemap.xml` y `robots.txt` generados a partir de `VITE_DOMAIN`.
 - Error boundary con acción de recarga.
+- Páginas largas (Preguntas, Términos y Privacidad) con índice, anclas con scroll suave y una única salida flotante **Volver arriba**; los enlaces de índice se ven sin depender de hover.
+- Interfaz y metadatos en español argentino (`lang="es-AR"`, `og:locale es_AR`); fechas e importes se formatean con `es-AR`.
 
 ## Stack Tecnológico
 
@@ -265,7 +267,7 @@ driverAmount = driverAmountBase - fuelFromDriver
 
 - Ruta: `/panel/papelera`.
 - Lista las jornadas eliminadas con `GET /api/v1/journeys/trash?limit=20&offset=0`, la última eliminada primero.
-- Cada tarjeta muestra la fecha de la jornada, la fecha de eliminación, el total y la retención (**Restaurable hasta el …**).
+- Cada tarjeta muestra la fecha de la jornada, la fecha de eliminación, el total, la retención (**Restaurable hasta el …**) y, cuando está disponible, el código de verificación con enlace público y botón **Copiar enlace**.
 - Acción por jornada: **Restaurar** (`POST /api/v1/journeys/:id/restore`).
 - **No existe eliminación definitiva manual.** La única baja definitiva es la purga automática a los 30 días.
 - Si al restaurar ya hay una jornada vigente para la misma fecha, el backend responde `409 JOURNEY_DATE_EXISTS`. La app muestra la jornada vigente y pide confirmación antes de reemplazarla; al confirmar, la vigente pasa a la papelera con motivo interno `replaced`.
@@ -300,11 +302,11 @@ driverAmount = driverAmountBase - fuelFromDriver
 Públicas (Header y Footer en todas; con sesión activa redirigen a `/panel`, excepto `/verificar`):
 
 - `/`
-- `/faq`
-- `/about`
-- `/terms`
-- `/privacy`
-- `/login`
+- `/preguntas` — preguntas frecuentes (`/faq` redirige acá)
+- `/acerca` — información sobre la app (`/about` redirige acá)
+- `/terminos` — términos y condiciones (`/terms` redirige acá)
+- `/privacidad` — política de privacidad (`/privacy` redirige acá)
+- `/ingresar` — acceso y registro (`/login` redirige acá)
 - `/verificar` y `/verificar/:code` — verificación pública del recibo (accesible también con sesión)
 
 Protegidas:
@@ -340,9 +342,9 @@ El paso de la calculadora vive en la URL: al recargar se conserva la sección do
 | `GET` | `/api/v1/journeys/:id` | Detalle de una jornada |
 | `GET` | `/api/v1/journeys/:id/share-status` | Indica si el recibo se puede descargar/compartir (`shareable`) |
 | `DELETE` | `/api/v1/journeys/:id` | Elimina una jornada (la mueve a la papelera) |
-| `GET` | `/api/v1/journeys/trash?limit=&offset=` | Lista la papelera — **pendiente de backend** |
-| `PATCH` | `/api/v1/journeys/:id/restore` | Restaura una jornada de la papelera — **pendiente de backend** |
-| `DELETE` | `/api/v1/journeys/:id/permanent` | Elimina definitivamente una jornada — **pendiente de backend** |
+| `GET` | `/api/v1/journeys/trash?limit=&offset=` | Lista la papelera |
+| `POST` | `/api/v1/journeys/:id/restore` | Restaura una jornada de la papelera |
+| `GET` | `/api/v1/verify/:code` | Verificación pública de una constancia (sin sesión) |
 | `POST` | `/api/v1/ai/chat` | Envía un mensaje a ChófIA |
 | `GET` | `/api/v1/ai/conversations` | Lista las conversaciones vigentes |
 | `GET` | `/api/v1/ai/conversations/:id/messages` | Historial de una conversación |
@@ -425,11 +427,11 @@ Pasos:
 
 ## Documentación Relacionada
 
-- [AGENTS.md](./.agent/AGENTS.md)
-- [Buenas prácticas React](./.agent/skills/best-practiced/references/best-practice-react.md)
-- [Buenas prácticas TypeScript](./.agent/skills/best-practiced/references/best-practice-ts.md)
-- [Reglas](./.agent/skills/rules/RULES.md)
-- [Estilo de código](./.agent/skills/style-code/skills/references/style-code.md)
+- [AGENTS.md](./.custom.agent/AGENTS.md)
+- [Buenas prácticas React](./.custom.agent/skills/best-practiced/references/best-practice-react.md)
+- [Buenas prácticas TypeScript](./.custom.agent/skills/best-practiced/references/best-practice-ts.md)
+- [Reglas](./.custom.agent/skills/rules/RULES.md)
+- [Estilo de código](./.custom.agent/skills/style-code/skills/references/style-code.md)
 
 ## Licencia
 

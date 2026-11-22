@@ -9,7 +9,7 @@ const HomePage = (): ReactNode => {
 
   // EMPIEZO LA CALCULADORA: CON CUENTA VOY AL PANEL, SIN CUENTA AL LOGIN
   const handleStart = useCallback((): void => {
-    navigate(user ? '/panel' : '/login')
+    navigate(user ? '/panel' : '/ingresar')
   }, [user, navigate])
 
   return <LandingPage onStart={handleStart} hasAccount={Boolean(user)} />

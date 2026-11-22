@@ -3,8 +3,8 @@ import type { LegalLink, SocialLink } from '../types/footer';
 import { FileText, Shield } from 'lucide-react';
 
 export const legalLinks: LegalLink[] = [
-  { to: "/terms", label: "Términos y Condiciones", icon: FileText },
-  { to: "/privacy", label: "Política de Privacidad", icon: Shield },
+  { to: "/terminos", label: "Términos y Condiciones", icon: FileText },
+  { to: "/privacidad", label: "Política de Privacidad", icon: Shield },
 ];
 
 export const socialLinks: SocialLink[] = [

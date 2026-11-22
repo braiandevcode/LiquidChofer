@@ -12,11 +12,11 @@ const PanelLayout = (): ReactNode => {
     <UserSettingsProvider>
       <CalculatorProvider>
         <ChatProvider>
-          <div className="flex min-h-dvh bg-bg-deep">
+          <div className="flex h-dvh min-h-0 overflow-hidden bg-bg-deep">
             <PanelSidebar />
-            <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex min-w-0 min-h-0 flex-1 flex-col">
               <PanelMobileNav />
-              <main className="flex-1 px-4 py-6 pb-28 md:px-8 md:py-8 md:pb-8">
+              <main className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-6 pb-28 md:px-8 md:py-8 md:pb-8">
                 <PanelBreadcrumb />
                 <Outlet />
               </main>

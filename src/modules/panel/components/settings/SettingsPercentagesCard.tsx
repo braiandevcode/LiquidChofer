@@ -17,7 +17,6 @@ const SettingsPercentagesCard = (): ReactNode => {
       title="Porcentajes por defecto"
       description="Definí cómo se reparte tu jornada."
       tone="blue"
-      className="lg:col-span-2"
     >
       {isLoading && !settings ? (
         <div className="flex items-center justify-center gap-2 py-8 text-sm text-text-secondary">

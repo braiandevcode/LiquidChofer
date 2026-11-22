@@ -3,6 +3,6 @@ import type { NavLinks } from '../types/header'
 
 export const navLinks: NavLinks[] = [
   { to: '/', label: 'Inicio', icon: House },
-  { to: '/faq', label: 'FAQ', icon: CircleHelp },
-  { to: '/about', label: 'Acerca', icon: Info },
+  { to: '/preguntas', label: 'Preguntas', icon: CircleHelp },
+  { to: '/acerca', label: 'Acerca de', icon: Info },
 ]

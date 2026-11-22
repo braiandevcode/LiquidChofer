@@ -101,7 +101,7 @@ const Header = ():ReactNode => {
             </>
           ) : (
             <NavLink
-              to="/login"
+              to="/ingresar"
               onClick={handleNavClick}
               className="ml-1 px-4 py-2 rounded-lg text-sm font-bold inline-flex items-center gap-1.5 transition-all duration-200 cursor-pointer font-display tracking-wide btn-primary-glow text-white"
             >
@@ -183,7 +183,7 @@ const Header = ():ReactNode => {
               </div>
             ) : (
               <NavLink
-                to="/login"
+                to="/ingresar"
                 onClick={handleNavClick}
                 className="mt-1 px-4 py-3 rounded-xl text-sm font-bold inline-flex items-center gap-2 transition-all duration-200 cursor-pointer font-display tracking-wide btn-primary-glow text-white"
               >

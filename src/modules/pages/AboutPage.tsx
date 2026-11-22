@@ -22,30 +22,17 @@ const AboutPage = ():ReactNode => {
 
   return (
     <div className="min-safe">
-      {/* Desktop: fixed right sidebar (xl+) */}
-      <div
-        className={`hidden xl:block fixed right-4 top-1/2 -translate-y-1/2 z-10 w-56 2xl:w-80 transition-all duration-700 ease-out ${showSponsor ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}
-      >
-        <SponsorBanner
-          imageUrl={SPONSORS[0].imageUrl}
-          linkUrl={SPONSORS[0].linkUrl}
-          alt={SPONSORS[0].alt}
-          dismissible
-        />
-      </div>
-      {/* Mobile: sticky slide from top with dismiss */}
-      <div className="sticky top-17 z-20 xl:hidden bg-bg-deep">
+      {/* Única instancia del patrocinador: sticky en móvil, fija a la derecha en desktop */}
+      <div className="sticky top-17 z-20 bg-bg-deep xl:fixed xl:right-4 xl:top-1/2 xl:z-10 xl:w-56 xl:-translate-y-1/2 2xl:w-80">
         <div
-          className={`transition-all duration-700 ease-out overflow-hidden ${showSponsor ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}`}
+          className={`mx-auto max-w-5xl px-4 pt-2 transition-opacity duration-700 ease-out md:px-6 xl:mx-0 xl:px-0 xl:pt-0 ${showSponsor ? 'opacity-100' : 'opacity-0'}`}
         >
-          <div className="mx-auto max-w-5xl px-4 pt-2 md:px-6">
-            <SponsorBanner
-              imageUrl={SPONSORS[0].imageUrl}
-              linkUrl={SPONSORS[0].linkUrl}
-              alt={SPONSORS[0].alt}
-              dismissible
-            />
-          </div>
+          <SponsorBanner
+            imageUrl={SPONSORS[0].imageUrl}
+            linkUrl={SPONSORS[0].linkUrl}
+            alt={SPONSORS[0].alt}
+            dismissible
+          />
         </div>
       </div>
 
@@ -80,7 +67,7 @@ const AboutPage = ():ReactNode => {
             Y si te queda una duda, ChófIA te responde.
           </p>
 
-          <Link to="/">
+          <Link to="/ingresar">
             <Button variant="primary" fullWidth={false} className="text-lg px-10 py-4">
               Empezar gratis
             </Button>
@@ -175,7 +162,7 @@ const AboutPage = ():ReactNode => {
             <p className="text-lg text-text-secondary max-w-xl mx-auto mb-8">
               Empezá gratis y simplificá tu jornada.
             </p>
-            <Link to="/">
+            <Link to="/ingresar">
               <Button variant="primary" fullWidth={false} className="text-lg px-10 py-4">
                 Empezar gratis
               </Button>

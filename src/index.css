@@ -219,6 +219,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  /* Los destinos ya tienen scroll-mt-24: no agrego padding extra para no duplicar el offset. */
+  scroll-behavior: smooth;
+}
+
 .font-display {
   font-family: var(--font-display);
 }

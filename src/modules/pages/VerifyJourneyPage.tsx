@@ -33,11 +33,15 @@ import { FORMAT_JOURNEY_DATE, FORMAT_TIMESTAMP_DATE_TIME } from '../../shared/li
 import Button from '../../shared/ui/Button'
 import Input from '../../shared/ui/Input'
 
-// EL CODIGO SIEMPRE TIENE 16 CARACTERES DEL ALFABETO DEL BACKEND (SIN I, L, O, U).
-const CODE_LENGTH: number = import.meta.env.MAX_LENGTH;
-const CODE_PATTERN: RegExp = /^[0-9A-HJKMNP-TV-Z]{16}$/
+// EL LARGO VIENE DE VITE_CODE_LENGTH; 16 ES EL VALOR POR DEFECTO Y COINCIDE CON EL FORMATO DEL BACKEND.
+const CONFIGURED_CODE_LENGTH: number = Number(import.meta.env.VITE_CODE_LENGTH)
+const CODE_LENGTH: number =
+  Number.isInteger(CONFIGURED_CODE_LENGTH) && CONFIGURED_CODE_LENGTH > 0
+    ? CONFIGURED_CODE_LENGTH
+    : 16
+const CODE_PATTERN: RegExp = new RegExp(`^[0-9A-HJKMNP-TV-Z]{${CODE_LENGTH}}$`)
 const INVALID_CODE_MESSAGE: string =
-  'El código tiene 16 caracteres. Revisalo y volvé a intentar.'
+  `El código tiene ${CODE_LENGTH} caracteres. Revisalo y volvé a intentar.`
 const NOT_FOUND_MESSAGE: string =
   'No encontramos una constancia con ese código. Revisá que esté completo.'
 
