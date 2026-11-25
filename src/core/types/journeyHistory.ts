@@ -1,4 +1,5 @@
 import type { TCarOwner } from "./TCarOwner"
+import type { IVoucherDetail } from "../interfaces/IVoucherDetail"
 
 // Contrato del historial de jornadas que expone el backend (module/journeys).
 export type TJourneyVoucherType = 'factory' | 'other'
@@ -165,6 +166,9 @@ export interface IJourneyVerificationAmounts {
   driverAmount: number
   carPercent: number | null
   carAmount: number | null
+  // DETAIL OPCIONAL: CUANDO EL BACKEND LO EXPUESTA, PERMITE MOSTRAR VALES Y COMBUSTIBLE.
+  vouchers?: IVoucherDetail[]
+  fuelFromAgency?: number
 }
 
 // Respuesta de GET /api/v1/verify/:code (publica, sin sesion).
