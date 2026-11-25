@@ -12,7 +12,6 @@ import type { IChatMessageState } from '../../../core/interfaces/IChatMessageSta
 import type { ICalculationState } from '../../../core/interfaces/ICalculationState'
 import type { IChatResponse } from '../../../core/interfaces/IChatResponse'
 import type { IConversation } from '../../../core/interfaces/IConversation'
-import type { IConversationMessage } from '../../../core/interfaces/IConversationMessage'
 import type { IChatUsage } from '../../../core/interfaces/IChatUsage'
 import { ChatContext, type IChatContextValue } from './chatContextValue'
 
@@ -25,9 +24,11 @@ const CREATE_CONVERSATION = (response: IChatResponse, title: string): IConversat
   createdAt: new Date().toISOString(),
 })
 
-const WITH_CALCULATION = (response: IChatResponse): IConversationMessage => ({
+// EL FLAG DE REDACCION ES SOLO DE UI: NO LO TRAEN LAS CONVERSACIONES CARGADAS DEL BACKEND.
+const WITH_CALCULATION = (response: IChatResponse, animateTyping = false): IChatMessageState => ({
   ...response.assistantMessage,
   calculation: response.assistantMessage.calculation ?? response.calculation ?? null,
+  animateTyping,
 })
 
 // UN MENSAJE SOLO SE MUESTRA SI TIENE ALGO VISIBLE: TEXTO, IMAGEN O CALCULO.
@@ -200,7 +201,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
           FILTER_VISIBLE_MESSAGES([
             ...prev.filter((message) => message.id !== tempId),
             response.userMessage,
-            WITH_CALCULATION(response),
+            WITH_CALCULATION(response, true),
           ]),
         )
         void LIST_REFRESH()
@@ -233,7 +234,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
         }
 
         setMessages((prev) =>
-          FILTER_VISIBLE_MESSAGES([...prev, response.userMessage, WITH_CALCULATION(response)]),
+          FILTER_VISIBLE_MESSAGES([...prev, response.userMessage, WITH_CALCULATION(response, true)]),
         )
         void LIST_REFRESH()
         return true
