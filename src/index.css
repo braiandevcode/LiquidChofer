@@ -22,6 +22,7 @@
   --color-accent-red: #ef4444;
   --color-accent-red-soft: #f87171;
   --color-accent-blue: #6366f1;
+  --color-accent-blue-soft: #818cf8;
 
   --color-border-subtle: #221544;
   --color-border-emphasis: #38286b;
@@ -55,6 +56,7 @@
   --color-accent-red: #dc2626;
   --color-accent-red-soft: #ef4444;
   --color-accent-blue: #4f46e5;
+  --color-accent-blue-soft: #4f46e5;
 
   --color-border-subtle: #e5e7eb;
   --color-border-emphasis: #d1d5db;
@@ -202,6 +204,24 @@
 
 .animate-pulse-glow {
   animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* PULSO LEVE + ANILLO TIPO FOCUS; OUTLINE NO DESPLAZA EL LAYOUT */
+@keyframes stepPulse {
+  0%, 100% {
+    transform: scale(1);
+    outline-color: transparent;
+  }
+  50% {
+    transform: scale(1.08);
+    outline-color: var(--step-pulse-ring, var(--color-accent-violet));
+  }
+}
+
+.animate-step-pulse {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  animation: stepPulse 1.6s ease-in-out infinite;
 }
 
 .stagger-1 { animation-delay: 50ms; }

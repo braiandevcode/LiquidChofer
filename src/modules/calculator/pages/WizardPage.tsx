@@ -54,6 +54,9 @@ const stepValid = (state: ReturnType<typeof useCalculatorContext>['state'], step
   }
 }
 
+// DEVUELVO SIEMPRE EL PASO ACTUAL (1-BASED); EL PULSO YA NO SE MUEVE AL SIGUIENTE
+const getAttentionStep = (currentStep: number): number => currentStep + 1
+
 const StepRenderer = ({ step }: { step: number }): ReactNode => {
   const StepComponent = stepComponents[step]
   return <StepComponent />
@@ -65,6 +68,19 @@ const WizardPage = (): ReactNode => {
   const navigate: NavigateFunction = useNavigate()
   const stepIndex: number = getCalculatorStepIndex(step) // -1 SI EL SLUG NO EXISTE
   const currentStep: number = stepIndex < 0 ? 0 : stepIndex
+  // CALCULO UNA SOLA VEZ LA VALIDACION DEL PASO ACTUAL
+  const isCurrentStepValid: boolean = stepValid(state, currentStep)
+  // SOLO PERMITO SALTAR HACIA ADELANTE SI TODOS LOS PASOS INTERMEDIOS YA SON VALIDOS
+  const canSkipToStep = (step: number): boolean => {
+    const targetIndex: number = step - 1 // CONVIERTO EL NUMERO DE PASO (1-BASED) A INDICE 0-BASED
+    if (targetIndex <= currentStep) return true // PREVIOS O EL ACTUAL NO SON UN SALTO
+    for (let index = currentStep; index < targetIndex; index++) {
+      if (!stepValid(state, index)) return false
+    }
+    return true
+  }
+  // EL PULSO QUEDA FIJO EN EL PASO DONDE ESTAMOS PARADOS
+  const attentionStep: number = getAttentionStep(currentStep)
   const [direction, setDirection] = useState<TDirection | null>(null)
   const [receiptOpen, setReceiptOpen] = useState<boolean>(false)
   const [receiptJourneyId, setReceiptJourneyId] = useState<string | null>(null)
@@ -77,21 +93,28 @@ const WizardPage = (): ReactNode => {
   })
 
   const goNext = useCallback(() => {
-    if (currentStep < 4 && stepValid(state, currentStep)) {
+    if (currentStep < 4 && isCurrentStepValid) {
       setDirection('next')
       navigate(getCalculatorStepPath(currentStep + 1)) // EL PASO VIVE EN LA URL
     }
-  }, [currentStep, state, navigate])
+  }, [currentStep, isCurrentStepValid, navigate])
 
-  const goPrev = useCallback(() => {
-    if (currentStep > 0) {
-      if (currentStep === 1) {
-        dispatch({ type: 'CLEAR_UNSAVED_VOUCHERS' })
+  const goToStep = (step: number): void => {
+    const targetStep: number = step - 1 // CONVIERTO EL NUMERO DE PASO (1-BASED) A INDICE 0-BASED
+    if (targetStep < 0 || targetStep >= STEP_LABELS.length || targetStep === currentStep) return
+    if (targetStep < currentStep) {
+      if (targetStep === 0) {
+        dispatch({ type: 'CLEAR_UNSAVED_VOUCHERS' }) // VUELVO A INGRESO Y DESCARTO VALES NO GUARDADOS
       }
       setDirection('prev')
-      navigate(getCalculatorStepPath(currentStep - 1))
+    } else {
+      if (!canSkipToStep(step)) return // NO SALTO SOBRE PASOS INVALIDOS
+      setDirection('next')
     }
-  }, [currentStep, dispatch, navigate])
+    navigate(getCalculatorStepPath(targetStep))
+  }
+
+  const goPrev = (): void => goToStep(currentStep)
 
   // CUBRE RECARGA O LINK DIRECTO AL PASO DE RESULTADOS
   useEffect(() => {
@@ -226,6 +249,11 @@ const WizardPage = (): ReactNode => {
         currentStep={currentStep + 1}
         totalSteps={5}
         labels={STEP_LABELS}
+        attentionStep={attentionStep}
+        isCurrentStepValid={isCurrentStepValid}
+        canSkipToStep={canSkipToStep}
+        onPreviousStepClick={goToStep}
+        onNextStepClick={goToStep}
       />
 
       <div className="card-glass rounded-2xl p-5 md:p-6" key={`step-${currentStep}-${direction}`}>
@@ -255,7 +283,7 @@ const WizardPage = (): ReactNode => {
         </div>
 
         <div className="flex items-center gap-2">
-          {!stepValid(state, currentStep) && currentStep < 4 && (
+          {!isCurrentStepValid && currentStep < 4 && (
             <span className="hidden sm:inline text-xs text-text-secondary max-w-28 leading-tight text-right">
               {STEP_HELP_TEXTS[currentStep]}
             </span>
@@ -265,13 +293,13 @@ const WizardPage = (): ReactNode => {
               <button
                 type="button"
                 onClick={goNext}
-                disabled={!stepValid(state, currentStep)}
+                disabled={!isCurrentStepValid}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-accent-violet px-4 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:shadow-glow-violet disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer font-display"
               >
-                Siguiente
+                Avanzar
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </button>
-              {!stepValid(state, currentStep) && (
+              {!isCurrentStepValid && (
                 <HelpHint text={STEP_HELP_TEXTS[currentStep]} side="top" align="end" />
               )}
             </span>
