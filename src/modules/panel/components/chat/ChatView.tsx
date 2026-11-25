@@ -24,6 +24,8 @@ const ChatView = (): ReactNode => {
     noUsage,
     composerDisabled,
     newChatFocusToken,
+    typingMessageId,
+    clearTypingMessage,
     startNewChat,
     confirmCalculation,
     sendMessage,
@@ -175,6 +177,8 @@ const ChatView = (): ReactNode => {
               <ChatMessageList
                 messages={messages}
                 isSending={isSending}
+                typingMessageId={typingMessageId}
+                onTypingDone={clearTypingMessage}
                 confirmDisabled={composerDisabled}
                 onConfirmCalculation={confirmCalculation}
                 onSaveCalculation={HANDLE_SAVE_CALCULATION}

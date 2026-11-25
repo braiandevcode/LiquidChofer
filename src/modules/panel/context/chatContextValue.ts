@@ -16,6 +16,8 @@ export interface IChatContextValue {
   noUsage: boolean
   composerDisabled: boolean
   newChatFocusToken: number
+  typingMessageId: string | null
+  clearTypingMessage: () => void
   selectConversation: (conversation: IConversation) => Promise<void>
   startNewChat: () => void
   deleteConversation: (conversationId: string) => Promise<boolean>

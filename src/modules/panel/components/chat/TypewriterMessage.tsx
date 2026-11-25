@@ -6,6 +6,7 @@ interface ITypewriterMessageProps {
   animate: boolean
   children?: ReactNode
   onProgress?: () => void
+  onDone?: () => void
 }
 
 const MIN_DURATION = 350
@@ -25,6 +26,7 @@ const TypewriterMessage = ({
   animate,
   children,
   onProgress,
+  onDone,
 }: ITypewriterMessageProps): ReactNode => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(REDUCED_MOTION)
   const [visibleLength, setVisibleLength] = useState<number>(() =>
@@ -43,7 +45,12 @@ const TypewriterMessage = ({
   const shouldAnimate: boolean = animate && content.trim().length > 0 && !prefersReducedMotion
 
   useEffect(() => {
-    if (!shouldAnimate) return
+    if (!shouldAnimate) {
+      if (!animate) return
+      // SIN ANIMACION (REDUCED MOTION O CONTENIDO VACIO): LIBERO EL ID EN EL PROXIMO FRAME.
+      const frameId: number = requestAnimationFrame(() => onDone?.())
+      return () => cancelAnimationFrame(frameId)
+    }
 
     const duration: number = Math.min(
       MAX_DURATION,
@@ -67,6 +74,7 @@ const TypewriterMessage = ({
         frameRef.current = requestAnimationFrame(tick)
       } else {
         frameRef.current = null
+        onDone?.()
       }
     }
 
@@ -77,7 +85,7 @@ const TypewriterMessage = ({
       frameRef.current = null
       lastLengthRef.current = 0
     }
-  }, [content, shouldAnimate, onProgress])
+  }, [content, shouldAnimate, animate, onDone, onProgress])
 
   const displayLength: number = shouldAnimate ? visibleLength : content.length
   const isTyping: boolean = shouldAnimate && displayLength < content.length
