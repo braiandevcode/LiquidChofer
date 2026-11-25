@@ -5,7 +5,7 @@ import LoadingDots from '../../../../shared/styles/LoadingDots'
 import ImagePreviewModal from '../../../../shared/components/ImagePreviewModal'
 import { cn } from '../../../../shared/lib/utils'
 import { FORMAT_TIME } from './chat.utils'
-import MarkdownMessage from './MarkDownMessage'
+import TypewriterMessage from './TypewriterMessage'
 import CalculationCard from './calculation/CalculationCard'
 
 interface IChatMessageListProps {
@@ -69,7 +69,7 @@ const LATEST_CALCULATION_ID = (messages: IChatMessageState[]): string | null => 
   return null
 }
 
-// LISTA DE BURBUJAS DEL CHAT: EL USUARIO A LA DERECHA Y LA IA A LA IZQUIERDA.
+// LISTA DE MENSAJES: EL USUARIO EN BURBUJA A LA DERECHA Y LA IA A TODO EL ANCHO.
 const ChatMessageList = ({
   messages,
   isSending,
@@ -77,6 +77,7 @@ const ChatMessageList = ({
   onConfirmCalculation,
   onSaveCalculation,
 }: IChatMessageListProps): ReactNode => {
+  const scrollRef = useRef<HTMLDivElement | null>(null)
   const bottomRef = useRef<HTMLDivElement | null>(null)
   const [previewImage, setPreviewImage] = useState<IRenderedImage | null>(null)
   const latestCalculationId: string | null = LATEST_CALCULATION_ID(messages)
@@ -84,24 +85,36 @@ const ChatMessageList = ({
   const HANDLE_OPEN_PREVIEW = useCallback((image: IRenderedImage): void => setPreviewImage(image), [])
   const HANDLE_CLOSE_PREVIEW = useCallback((): void => setPreviewImage(null), [])
 
+  // DURANTE LA REDACCION SIGO EL FINAL, PERO NO LE SACO EL SCROLL SI EL USUARIO SUBIO.
+  const HANDLE_TYPING_PROGRESS = useCallback((): void => {
+    const container = scrollRef.current
+    if (!container) return
+    const distanceToBottom: number = container.scrollHeight - container.scrollTop - container.clientHeight
+    if (distanceToBottom > 120) return
+    bottomRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' })
+  }, [])
+
   // MANTENGO EL SCROLL PEGADO AL ULTIMO MENSAJE
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }, [messages, isSending])
 
   return (
-    <div className="chat-scrollbar flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3 py-4 md:px-5">
+    <div
+      ref={scrollRef}
+      className="chat-scrollbar flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3 py-4 md:px-5"
+    >
       {messages.map((message) => {
         const isUser: boolean = message.role === 'user'
         const messageImages: IRenderedImage[] = MESSAGE_IMAGES(message)
         return (
-          <div key={message.id} className={cn('flex', isUser ? 'justify-end' : 'justify-start')}>
+          <div key={message.id} className={cn('flex', isUser ? 'justify-end' : 'w-full')}>
             <div
               className={cn(
-                'max-w-[85%] rounded-2xl px-3.5 py-2.5 md:max-w-[75%]',
+                'min-w-0',
                 isUser
-                  ? 'rounded-br-md bg-accent-violet/20 border border-accent-violet/20'
-                  : 'rounded-bl-md card-glass border border-border-subtle',
+                  ? 'max-w-[85%] rounded-2xl rounded-br-md border border-accent-violet/20 bg-accent-violet/20 px-3.5 py-2.5 md:max-w-[75%]'
+                  : 'w-full',
               )}
             >
               {messageImages.length > 0 && (
@@ -120,11 +133,12 @@ const ChatMessageList = ({
                   )}
                 </>
               ) : (
-                // RESPUESTA DE LA IA: MARKDOWN (SIN pre-wrap PARA NO DUPLICAR LOS SALTOS DE LINEA)
-                <>
-                  <div className="break-words text-sm leading-relaxed text-text-primary">
-                    <MarkdownMessage content={message.content} />
-                  </div>
+                // RESPUESTA DE LA IA: TEXTO A TODO EL ANCHO Y REDACCION SIMULADA CUANDO LLEGA RECIEN.
+                <TypewriterMessage
+                  content={message.content}
+                  animate={message.animateTyping ?? false}
+                  onProgress={HANDLE_TYPING_PROGRESS}
+                >
                   {message.calculation && (
                     <CalculationCard
                       calculation={message.calculation}
@@ -135,7 +149,7 @@ const ChatMessageList = ({
                       onSave={onSaveCalculation}
                     />
                   )}
-                </>
+                </TypewriterMessage>
               )}
               {message.sendStatus === 'failed' && (
                 <p role="alert" className="mt-1 text-[11px] font-medium text-accent-red">
@@ -151,10 +165,8 @@ const ChatMessageList = ({
       })}
 
       {isSending && (
-        <div className="flex justify-start">
-          <div className="flex items-center gap-2 rounded-2xl rounded-bl-md border border-border-subtle bg-bg-card px-3.5 py-2.5">
-            <LoadingDots size="w-1.5 h-1.5" />
-          </div>
+        <div className="flex w-full items-center">
+          <LoadingDots size="w-1.5 h-1.5" />
         </div>
       )}
 
