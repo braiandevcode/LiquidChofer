@@ -11,27 +11,18 @@ import {
   ArrowLeft,
   BadgeCheck,
   CircleExclamationPoint,
-  Clock,
   LoaderCircle,
-  RotateCcw,
   Search,
-  ShieldCheck,
   ShieldX,
-  Trash,
-  type LucideIcon,
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ApiError } from '../../core/services/api'
 import { TO_USER_ERROR } from '../../core/services/apiMessages'
 import { verifyJourneyCode } from '../../core/services/journeyHistory.service'
-import type {
-  IJourneyVerificationAmounts,
-  IJourneyVerificationResponse,
-  TJourneyVerificationStatus,
-} from '../../core/types/journeyHistory'
-import { FORMAT_JOURNEY_DATE, FORMAT_TIMESTAMP_DATE_TIME } from '../../shared/lib/journey'
+import type { IJourneyVerificationResponse } from '../../core/types/journeyHistory'
 import Button from '../../shared/ui/Button'
 import Input from '../../shared/ui/Input'
+import VerificationDetails from './verification/VerificationDetails'
 
 // EL LARGO VIENE DE VITE_CODE_LENGTH; 16 ES EL VALOR POR DEFECTO Y COINCIDE CON EL FORMATO DEL BACKEND.
 const CONFIGURED_CODE_LENGTH: number = Number(import.meta.env.VITE_CODE_LENGTH)
@@ -58,78 +49,7 @@ const FORMAT_CODE_INPUT = (raw: string): string => {
 
 const IS_VALID_CODE = (clean: string): boolean => CODE_PATTERN.test(clean)
 
-const ARS_FORMATTER = new Intl.NumberFormat('es-AR', {
-  style: 'currency',
-  currency: 'ARS',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})
-
-const FORMAT_ARS = (value?: number | null): string =>
-  typeof value === 'number' && Number.isFinite(value) ? ARS_FORMATTER.format(value) : '—'
-
 type TVerificationView = 'idle' | 'loading' | 'success' | 'invalid' | 'notfound' | 'error'
-
-interface IStatusMeta {
-  label: string
-  detail: string
-  icon: LucideIcon
-  tone: string
-}
-
-const STATUS_META: Record<TJourneyVerificationStatus, IStatusMeta> = {
-  active: {
-    label: 'Constancia vigente',
-    detail: 'La jornada está activa y coincide con una constancia emitida por LiquidChofer.',
-    icon: ShieldCheck,
-    tone: 'text-accent-teal border-accent-teal/30 bg-accent-teal/10',
-  },
-  replaced: {
-    label: 'Constancia reemplazada',
-    detail:
-      'Esta versión fue reemplazada por una jornada más reciente de la misma fecha. Sus importes ya no están vigentes.',
-    icon: RotateCcw,
-    tone: 'text-accent-amber border-accent-amber/30 bg-accent-amber/10',
-  },
-  deleted: {
-    label: 'Constancia eliminada',
-    detail:
-      'La jornada fue eliminada por su autor. La constancia existió, pero ya no está vigente.',
-    icon: Trash,
-    tone: 'text-accent-red border-accent-red/30 bg-accent-red/10',
-  },
-}
-
-interface IAmountRow {
-  label: string
-  value: string
-}
-
-// SOLO MUESTRO LOS IMPORTES QUE EL BACKEND CONSERVA PARA AUDITORIA.
-const BUILD_AMOUNT_ROWS = (amounts: IJourneyVerificationAmounts): IAmountRow[] => {
-  const rows: IAmountRow[] = [
-    { label: 'Total facturado', value: FORMAT_ARS(amounts.total) },
-    { label: 'Total ajustado', value: FORMAT_ARS(amounts.adjustedTotal) },
-    {
-      label: `Agencia (${amounts.agencyPercent}%)`,
-      value: FORMAT_ARS(amounts.agencyAmount),
-    },
-    { label: 'Ganancia de la agencia', value: FORMAT_ARS(amounts.finalAgency) },
-    {
-      label: `Chofer (${amounts.driverPercent}%)`,
-      value: FORMAT_ARS(amounts.driverAmount),
-    },
-  ]
-
-  if (amounts.carPercent !== null) {
-    rows.push({
-      label: `Vehículo (${amounts.carPercent}%)`,
-      value: FORMAT_ARS(amounts.carAmount),
-    })
-  }
-
-  return rows
-}
 
 const VerifyJourneyPage = (): ReactNode => {
   const { code: codeParam } = useParams<{ code?: string }>()
@@ -222,8 +142,6 @@ const VerifyJourneyPage = (): ReactNode => {
   const canSubmit: boolean = input.length > 0 && !isLoading
   const inputError: string =
     view === 'invalid' ? message : urlCodeInvalid && inputDraft === null ? INVALID_CODE_MESSAGE : ''
-  const statusMeta: IStatusMeta | null = result ? STATUS_META[result.status] : null
-  const StatusIcon: LucideIcon | null = statusMeta?.icon ?? null
 
   return (
     <div className="min-safe">
@@ -306,7 +224,7 @@ const VerifyJourneyPage = (): ReactNode => {
           {!isLoading && view === 'idle' && !inputError && (
             <div className="rounded-xl border border-border-subtle bg-bg-card/60 p-5 text-sm text-text-muted animate-fade-in-up">
               <p className="flex items-start gap-2">
-                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-text-muted" aria-hidden="true" />
+                <ShieldX className="mt-0.5 h-4 w-4 shrink-0 text-text-muted" aria-hidden="true" />
                 La verificación compara el código con los registros de LiquidChofer e informa si la
                 jornada está vigente, fue reemplazada o fue eliminada.
               </p>
@@ -354,79 +272,8 @@ const VerifyJourneyPage = (): ReactNode => {
             </div>
           )}
 
-          {!isLoading && view === 'success' && result && statusMeta && StatusIcon && (
-            <div className="card-glass rounded-xl overflow-hidden animate-fade-in-up">
-              <div className={`flex items-start gap-3 border-b p-5 ${statusMeta.tone}`}>
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border-subtle bg-bg-deep/20">
-                  <StatusIcon className="h-6 w-6" aria-hidden="true" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold font-display">{statusMeta.label}</h2>
-                  <p className="mt-1 text-sm opacity-90">{statusMeta.detail}</p>
-                </div>
-              </div>
-
-              <div className="p-5">
-                <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div className="rounded-lg border border-border-subtle bg-bg-card-subtle p-3">
-                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-text-muted font-display">
-                      Fecha de la jornada
-                    </dt>
-                    <dd className="mt-1 text-sm font-semibold text-text-primary">
-                      {FORMAT_JOURNEY_DATE(result.journeyDate)}
-                    </dd>
-                  </div>
-                  <div className="rounded-lg border border-border-subtle bg-bg-card-subtle p-3">
-                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-text-muted font-display">
-                      Emitida
-                    </dt>
-                    <dd className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-text-primary">
-                      <Clock className="h-3.5 w-3.5 text-text-muted" aria-hidden="true" />
-                      {FORMAT_TIMESTAMP_DATE_TIME(result.createdAt)}
-                    </dd>
-                  </div>
-                  {result.deletedAt && (
-                    <div className="rounded-lg border border-border-subtle bg-bg-card-subtle p-3 sm:col-span-2">
-                      <dt className="text-[11px] font-semibold uppercase tracking-wider text-text-muted font-display">
-                        Dada de baja
-                      </dt>
-                      <dd className="mt-1 text-sm font-semibold text-text-primary">
-                        {FORMAT_TIMESTAMP_DATE_TIME(result.deletedAt)}
-                      </dd>
-                    </div>
-                  )}
-                </dl>
-
-                {result.amounts ? (
-                  <div className="mt-5">
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted font-display">
-                      Importes registrados
-                    </h3>
-                    <dl className="divide-y divide-border-subtle rounded-lg border border-border-subtle">
-                      {BUILD_AMOUNT_ROWS(result.amounts).map((row) => (
-                        <div
-                          key={row.label}
-                          className="flex items-baseline justify-between gap-3 px-3 py-2 text-sm"
-                        >
-                          <dt className="text-text-secondary">{row.label}</dt>
-                          <dd className="font-mono font-semibold text-text-primary">{row.value}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </div>
-                ) : (
-                  <p className="mt-5 rounded-lg border border-border-subtle bg-bg-card-subtle p-3 text-sm text-text-muted">
-                    Los importes ya no están disponibles. La constancia se conserva únicamente con
-                    sus datos de auditoría.
-                  </p>
-                )}
-
-                <p className="mt-5 text-xs text-text-muted">
-                  La verificación confirma que el código corresponde a una constancia registrada.
-                  Para validar el contenido impreso, compará sus importes con los que figuran acá.
-                </p>
-              </div>
-            </div>
+          {!isLoading && view === 'success' && result && (
+            <VerificationDetails result={result} />
           )}
         </div>
       </div>
