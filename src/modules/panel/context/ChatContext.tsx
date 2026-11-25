@@ -24,11 +24,9 @@ const CREATE_CONVERSATION = (response: IChatResponse, title: string): IConversat
   createdAt: new Date().toISOString(),
 })
 
-// EL FLAG DE REDACCION ES SOLO DE UI: NO LO TRAEN LAS CONVERSACIONES CARGADAS DEL BACKEND.
-const WITH_CALCULATION = (response: IChatResponse, animateTyping = false): IChatMessageState => ({
+const WITH_CALCULATION = (response: IChatResponse): IChatMessageState => ({
   ...response.assistantMessage,
   calculation: response.assistantMessage.calculation ?? response.calculation ?? null,
-  animateTyping,
 })
 
 // UN MENSAJE SOLO SE MUESTRA SI TIENE ALGO VISIBLE: TEXTO, IMAGEN O CALCULO.
@@ -67,6 +65,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
   const [isNewChat, setIsNewChat] = useState<boolean>(false)
   const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false)
   const [newChatFocusToken, setNewChatFocusToken] = useState<number>(0)
+  // ID TRANSITORIO: SOLO LA RESPUESTA QUE SE ESTA RECIBIENDO DEBE TIPEARSE.
+  const [typingMessageId, setTypingMessageId] = useState<string | null>(null)
+  const CLEAR_TYPING = useCallback((): void => setTypingMessageId(null), [])
 
   const noUsage: boolean = usage !== null && usage.remaining <= 0
   const composerDisabled: boolean = isSending || noUsage
@@ -128,6 +129,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
     setActiveConversation(conversation)
     setIsHistoryOpen(false)
     setError('')
+    setTypingMessageId(null)
     setMessages([])
     try {
       const data = await fetchConversationMessages(conversation.id)
@@ -142,6 +144,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
   const START_NEW_CHAT = useCallback((): void => {
     setActiveConversation(null)
     setIsNewChat(true)
+    setTypingMessageId(null)
     setMessages([])
     setIsHistoryOpen(false)
     setError('')
@@ -156,6 +159,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
         setConversations((prev) => prev.filter((conversation) => conversation.id !== conversationId))
         if (activeConversation?.id === conversationId) {
           setActiveConversation(null)
+          setTypingMessageId(null)
           setMessages([])
           setIsNewChat(false)
         }
@@ -171,6 +175,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
   const SEND_MESSAGE = useCallback(
     async (text: string, imagesData: string[]): Promise<boolean> => {
       setError('')
+      setTypingMessageId(null)
       setIsSending(true)
 
       const tempId: string = `temp-${crypto.randomUUID()}`
@@ -197,11 +202,13 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
           setActiveConversation(CREATE_CONVERSATION(response, text))
         }
 
+        const assistantMessage: IChatMessageState = WITH_CALCULATION(response)
+        setTypingMessageId(assistantMessage.id)
         setMessages((prev) =>
           FILTER_VISIBLE_MESSAGES([
             ...prev.filter((message) => message.id !== tempId),
             response.userMessage,
-            WITH_CALCULATION(response, true),
+            assistantMessage,
           ]),
         )
         void LIST_REFRESH()
@@ -224,6 +231,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
   const CONFIRM_CALCULATION = useCallback(
     async (conversationId: string): Promise<boolean> => {
       setError('')
+      setTypingMessageId(null)
       setIsSending(true)
 
       try {
@@ -233,8 +241,10 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
           setActiveConversation(CREATE_CONVERSATION(response, 'Cierre de jornada'))
         }
 
+        const assistantMessage: IChatMessageState = WITH_CALCULATION(response)
+        setTypingMessageId(assistantMessage.id)
         setMessages((prev) =>
-          FILTER_VISIBLE_MESSAGES([...prev, response.userMessage, WITH_CALCULATION(response, true)]),
+          FILTER_VISIBLE_MESSAGES([...prev, response.userMessage, assistantMessage]),
         )
         void LIST_REFRESH()
         return true
@@ -270,6 +280,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
       noUsage,
       composerDisabled,
       newChatFocusToken,
+      typingMessageId,
+      clearTypingMessage: CLEAR_TYPING,
       selectConversation: SELECT_CONVERSATION,
       startNewChat: START_NEW_CHAT,
       deleteConversation: DELETE_CONVERSATION,
@@ -293,6 +305,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }): ReactNode =
       noUsage,
       composerDisabled,
       newChatFocusToken,
+      typingMessageId,
+      CLEAR_TYPING,
       SELECT_CONVERSATION,
       START_NEW_CHAT,
       DELETE_CONVERSATION,

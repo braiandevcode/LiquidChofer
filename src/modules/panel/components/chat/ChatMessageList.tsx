@@ -11,6 +11,8 @@ import CalculationCard from './calculation/CalculationCard'
 interface IChatMessageListProps {
   messages: IChatMessageState[]
   isSending: boolean
+  typingMessageId: string | null
+  onTypingDone: () => void
   confirmDisabled: boolean
   onConfirmCalculation: (conversationId: string) => Promise<boolean>
   onSaveCalculation: (calculation: ICalculationState) => void
@@ -73,6 +75,8 @@ const LATEST_CALCULATION_ID = (messages: IChatMessageState[]): string | null => 
 const ChatMessageList = ({
   messages,
   isSending,
+  typingMessageId,
+  onTypingDone,
   confirmDisabled,
   onConfirmCalculation,
   onSaveCalculation,
@@ -136,8 +140,9 @@ const ChatMessageList = ({
                 // RESPUESTA DE LA IA: TEXTO A TODO EL ANCHO Y REDACCION SIMULADA CUANDO LLEGA RECIEN.
                 <TypewriterMessage
                   content={message.content}
-                  animate={message.animateTyping ?? false}
+                  animate={message.id === typingMessageId}
                   onProgress={HANDLE_TYPING_PROGRESS}
+                  onDone={onTypingDone}
                 >
                   {message.calculation && (
                     <CalculationCard
